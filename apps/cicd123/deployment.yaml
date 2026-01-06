@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cicd123
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cicd123
+  template:
+    metadata:
+      labels:
+        app: cicd123
+    spec:
+      containers:
+        - name: cicd123
+          image: harbor.lab.local/cicd123/sample-image:0.0.1
+          ports:
+            - containerPort: 8080
