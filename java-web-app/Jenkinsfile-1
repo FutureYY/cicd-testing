@@ -1,5 +1,3 @@
-
-
 pipeline {
     agent any
     stages {
@@ -10,10 +8,12 @@ pipeline {
         }
         stage('Scan') {
             steps {
-                dir('java-web-app') { // <-- make sure we're in the folder with mvnw
+                dir('java-web-app') { // make sure we're in the folder with mvnw
                     withSonarQubeEnv('jenkins-sonarqube') {
                         sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
                     }
                 }
             }
- 
+        }
+    }
+}
