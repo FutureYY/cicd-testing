@@ -1,0 +1,24 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: cicd123
+  namespace: flux
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: cicd-testing
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: "flux-bot"
+        email: "flux-bot@users.noreply.github.com"
+      messageTemplate: "Update cicd123 image to {{range .Updated.Images}}{{.NewTag}}{{end}}"
+    push:
+      branch: main
+  update:
+    path: ./apps/cicd123
+    strategy: Setters
