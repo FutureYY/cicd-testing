@@ -1,15 +1,35 @@
+#pipeline {
+ # agent { label 'linux' }
+  #options {
+   # buildDiscarder(logRotator(numToKeepStr: '5'))
+  #}
+  #stages {
+  #  stage('Scan') {
+   #   steps {
+    #    withSonarQubeEnv(installationName: 'jenkins-sonarqube') { 
+     #     sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+      #  }
+      #}
+    #}
+  #}
+#}
+
 pipeline {
-  agent { label 'linux' }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-  }
-  stages {
-    stage('Scan') {
-      steps {
-        withSonarQubeEnv(installationName: 'jenkins-sonarqube') { 
-          sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-      }
+        stage('Scan') {
+            steps {
+                dir('java-web-app') { // <-- make sure we're in the folder with mvnw
+                    withSonarQubeEnv('jenkins-sonarqube') {
+                        sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                    }
+                }
+            }
+        }
     }
-  }
 }
