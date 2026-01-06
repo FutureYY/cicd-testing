@@ -1,0 +1,10 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: cicd123
+  namespace: flux
+spec:
+  image: harbor.lab.local/cicd123/cicd123
+  interval: 1m
+  secretRef:
+    name: harbor-registry

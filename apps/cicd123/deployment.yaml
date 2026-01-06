@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: cicd123
-          image: harbor.lab.local/cicd123/sample-image:0.0.1
+          image: harbor.lab.local/cicd123/cicd123:latest
           ports:
             - containerPort: 8080
