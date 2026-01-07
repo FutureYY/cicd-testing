@@ -26,7 +26,7 @@ spec:
 
         stage('Sonar Scan') {
             steps {
-                dir('.') { // we're already in java-web-app
+                dir('java-web-app') { // we're already in java-web-app
                     withSonarQubeEnv('jenkins-sonarqube') {
                         sh 'mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
                     }
