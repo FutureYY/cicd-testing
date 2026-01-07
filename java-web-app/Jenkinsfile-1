@@ -28,7 +28,7 @@ spec:
             steps {
                 dir('java-web-app') {
                     withSonarQubeEnv('jenkins-sonarqube') {
-                        sh './mvnw clean sonar:sonar'
+                        sh 'mvn clean sonar:sonar'
                     }
                 }
             }

@@ -1,0 +1,7 @@
+apiVersion: trivy-operator.dev/v1alpha1
+kind: VulnerabilityReport
+metadata:
+  name: cicd123-scan
+  namespace: default
+spec:
+  image: harbor.lab.local/cicd123/cicd123:latest
