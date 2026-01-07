@@ -36,10 +36,11 @@ spec:
             steps {
                 sh '''
                   curl -sSLo sonar.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-                  unzip -q sonar.zip
+                  tar -xzf sonar.tar.gz
                   mv sonar-scanner-* /opt/sonar-scanner
-                  ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
-                '''
+                  ln -sf /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
+                  sonar-scanner --version
+               '''
             }
         }
 
