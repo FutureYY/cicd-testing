@@ -1,5 +1,11 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+            args '-v $HOME/.m2:/root/.m2'
+        }
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,25 +14,17 @@ pipeline {
         }
 
         stage('Check Java') {
-            steps {
-                sh 'java -version'
-            }
+            steps { sh 'java -version' }
         }
 
         stage('Check Maven') {
-            steps {
-                dir('java-web-app') {
-                    sh './mvnw -v'
-                }
-            }
+            steps { sh 'mvn -v' }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                dir('java-web-app') {
-                    withSonarQubeEnv('jenkins-sonarqube') {
-                        sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-                    }
+                withSonarQubeEnv('jenkins-sonarqube') {
+                    sh 'mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
                 }
             }
         }
