@@ -28,7 +28,13 @@ spec:
             steps {
                 dir('java-web-app') {
                     withSonarQubeEnv('jenkins-sonarqube') {
-                        sh 'mvn clean sonar:sonar'
+                        sh '''
+                          mvn clean verify
+                          sonar-scanner \
+                            -Dsonar.projectKey=demo \
+                            -Dsonar.sources=src \
+                            -Dsonar.java.binaries=target
+                        '''
                     }
                 }
             }
