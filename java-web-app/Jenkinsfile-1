@@ -15,5 +15,16 @@ pipeline {
                 }
             }
         }
+        stage('Check Java') {
+            steps {
+                sh 'java -version'
+            }
+        }
+        stage('Check Maven') {
+            steps {
+                sh './mvnw -v'
+            }
+        }
+
     }
 }

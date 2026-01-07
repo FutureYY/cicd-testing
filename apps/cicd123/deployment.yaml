@@ -13,8 +13,10 @@ spec:
       labels:
         app: cicd123
     spec:
+      imagePullSecrets:
+        - name: harbor-credentials
       containers:
         - name: cicd123
-          image: harbor.lab.local/cicd123/cicd123:latest
+          image: harbor.lab.local/cicd123/cicd123:1.0.0
           ports:
             - containerPort: 8080

@@ -5,3 +5,5 @@ resources:
   - imgrepo.yaml
   - imgpolicy.yaml
   - img-automation.yaml
+  - ingress.yaml
+  - service.yaml
