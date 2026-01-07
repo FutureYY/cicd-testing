@@ -1,8 +1,19 @@
 pipeline {
     agent {
-        docker {
-            image 'maven:3.9.6-eclipse-temurin-17'
-            args '-v $HOME/.m2:/root/.m2'
+        kubernetes {
+            label 'maven-agent'
+            defaultContainer 'maven'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9.6-eclipse-temurin-17
+    command:
+    - cat
+    tty: true
+"""
         }
     }
 
@@ -13,19 +24,20 @@ pipeline {
             }
         }
 
-        stage('Check Java') {
-            steps { sh 'java -version' }
-        }
-
-        stage('Check Maven') {
-            steps { sh 'mvn -v' }
-        }
-
-        stage('SonarQube Analysis') {
+        stage('Sonar Scan') {
             steps {
-                withSonarQubeEnv('jenkins-sonarqube') {
-                    sh 'mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                dir('.') { // we're already in java-web-app
+                    withSonarQubeEnv('jenkins-sonarqube') {
+                        sh 'mvn clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                    }
                 }
+            }
+        }
+
+        stage('Check Java & Maven') {
+            steps {
+                sh 'java -version'
+                sh 'mvn -v'
             }
         }
     }

@@ -41,14 +41,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Force SLF4J 1.x to avoid Sonar conflicts -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <!-- Spring Boot Maven plugin -->
