@@ -1,0 +1,205 @@
+NAMESPACE       NAME                                                  READY   STATUS     RESTARTS         AGE
+cert-manager    pod/cert-manager-7dd8c669df-pztq9                     1/1     Running    2 (3h40m ago)    13d
+cert-manager    pod/cert-manager-cainjector-7f5bd9c869-j88x7          1/1     Running    2 (3h40m ago)    13d
+cert-manager    pod/cert-manager-webhook-7b55b785f-kqf2b              1/1     Running    3 (3h40m ago)    14d
+default         pod/cicd123-5cf89ff85b-rc6f7                          1/1     Running    1 (3h40m ago)    22h
+default         pod/nfs-subdir-external-provisioner-fcd66fc96-8kf4c   1/1     Running    13 (3h40m ago)   13d
+flux-system     pod/helm-controller-744dd856d8-rqrvt                  1/1     Running    1 (3h40m ago)    22h
+flux-system     pod/image-automation-controller-56476f7fdf-ml8d9      1/1     Running    0                25m
+flux-system     pod/image-reflector-controller-7b88556686-kzhdm       1/1     Running    0                25m
+flux-system     pod/kustomize-controller-5b4ffc8554-mr2kq             1/1     Running    1 (3h40m ago)    22h
+flux-system     pod/notification-controller-78b57db948-mbkjv          1/1     Running    1 (3h40m ago)    22h
+flux-system     pod/source-controller-5d44b8b787-qh29n                1/1     Running    1 (3h40m ago)    22h
+flux            pod/flux-operator-5ffd7c8d74-zbgwl                    1/1     Running    11 (3h40m ago)   13d
+flux            pod/helm-controller-89d79966b-hb6l2                   1/1     Running    1 (3h40m ago)    4h48m
+flux            pod/image-automation-controller-655d9d4649-cp8tl      1/1     Running    1 (3h40m ago)    4h48m
+flux            pod/image-reflector-controller-6589679466-tzldr       1/1     Running    1 (3h40m ago)    4h48m
+flux            pod/kustomize-controller-db587f48b-4j9kh              1/1     Running    1 (3h40m ago)    4h48m
+flux            pod/notification-controller-698cd4c9cc-289wh          1/1     Running    1 (3h40m ago)    4h48m
+flux            pod/source-controller-85fb4974f4-pf46c                1/1     Running    1 (3h40m ago)    4h48m
+harbor          pod/harbor-core-5d5558589f-rrkqx                      1/1     Running    2 (3h40m ago)    13d
+harbor          pod/harbor-database-0                                 1/1     Running    3 (3h40m ago)    14d
+harbor          pod/harbor-jobservice-6c98444569-4tjcv                1/1     Running    8 (3h39m ago)    13d
+harbor          pod/harbor-portal-7c585d7986-5ggfb                    1/1     Running    2 (3h40m ago)    13d
+harbor          pod/harbor-redis-0                                    1/1     Running    2 (3h40m ago)    13d
+harbor          pod/harbor-registry-7746cbc56b-jxr9p                  2/2     Running    4 (3h40m ago)    13d
+harbor          pod/harbor-trivy-0                                    1/1     Running    2 (3h40m ago)    13d
+ingress-nginx   pod/ingress-nginx-controller-6ff8676445-hxzzp         1/1     Running    2 (3h40m ago)    13d
+jenkins         pod/jenkins-0                                         2/2     Running    0                119m
+keycloak        pod/keycloak-5fc8dbbdd5-pxn7z                         1/1     Running    2 (3h40m ago)    13d
+keycloak        pod/keycloak-postgres-0                               1/1     Running    2 (3h40m ago)    13d
+kube-system     pod/calico-kube-controllers-dbf6dc49-65dl4            1/1     Running    3 (3h40m ago)    14d
+kube-system     pod/calico-node-k8j9c                                 1/1     Running    3 (3h40m ago)    14d
+kube-system     pod/coredns-79b4b76f66-9mb54                          1/1     Running    2 (3h40m ago)    6d1h
+kube-system     pod/dns-autoscaler-676999957f-z6r5v                   1/1     Running    3 (3h40m ago)    14d
+kube-system     pod/kube-apiserver-ste-test-cicd                      1/1     Running    4 (3h40m ago)    14d
+kube-system     pod/kube-controller-manager-ste-test-cicd             1/1     Running    15 (3h40m ago)   14d
+kube-system     pod/kube-proxy-ck8rn                                  1/1     Running    3 (3h40m ago)    14d
+kube-system     pod/kube-scheduler-ste-test-cicd                      1/1     Running    15 (3h40m ago)   14d
+kube-system     pod/nodelocaldns-lnknc                                1/1     Running    3 (3h40m ago)    14d
+sonarqube       pod/sonar-postgres-0                                  1/1     Running    1 (3h40m ago)    5h2m
+sonarqube       pod/sonarqube-sonarqube-0                             1/1     Running    0                79m
+trivy-system    pod/scan-vulnerabilityreport-645bb8f685-tzfqd         0/1     Init:0/1   0                12s
+trivy-system    pod/scan-vulnerabilityreport-67679699c8-f2zs8         1/1     Running    0                105s
+trivy-system    pod/scan-vulnerabilityreport-6fc6988f79-fjhcc         0/1     Pending    0                5s
+trivy-system    pod/scan-vulnerabilityreport-84566b95c9-fpbpx         0/2     Pending    0                0s
+trivy-system    pod/trivy-operator-5b884bbb96-p2785                   1/1     Running    2 (3h40m ago)    5d3h
+trivy           pod/trivy-0                                           1/1     Running    3 (3h40m ago)    14d
+
+NAMESPACE       NAME                                         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+cert-manager    service/cert-manager                         ClusterIP      10.233.22.97    <none>        9402/TCP                     14d
+cert-manager    service/cert-manager-webhook                 ClusterIP      10.233.18.253   <none>        443/TCP                      14d
+default         service/cicd123                              ClusterIP      10.233.40.21    <none>        80/TCP                       6d4h
+default         service/kubernetes                           ClusterIP      10.233.0.1      <none>        443/TCP                      14d
+flux-system     service/notification-controller              ClusterIP      10.233.54.124   <none>        80/TCP                       22h
+flux-system     service/source-controller                    ClusterIP      10.233.54.73    <none>        80/TCP                       22h
+flux-system     service/webhook-receiver                     ClusterIP      10.233.36.131   <none>        80/TCP                       22h
+flux            service/flux-operator                        ClusterIP      10.233.7.141    <none>        8080/TCP,9080/TCP            14d
+flux            service/notification-controller              ClusterIP      10.233.35.28    <none>        80/TCP                       14d
+flux            service/source-controller                    ClusterIP      10.233.27.148   <none>        80/TCP                       14d
+flux            service/webhook-receiver                     ClusterIP      10.233.16.173   <none>        80/TCP                       14d
+harbor          service/harbor-core                          ClusterIP      10.233.51.19    <none>        80/TCP                       14d
+harbor          service/harbor-database                      ClusterIP      10.233.40.229   <none>        5432/TCP                     14d
+harbor          service/harbor-jobservice                    ClusterIP      10.233.41.163   <none>        80/TCP                       14d
+harbor          service/harbor-portal                        ClusterIP      10.233.7.20     <none>        80/TCP                       14d
+harbor          service/harbor-redis                         ClusterIP      10.233.6.103    <none>        6379/TCP                     14d
+harbor          service/harbor-registry                      ClusterIP      10.233.24.252   <none>        5000/TCP,8080/TCP            14d
+harbor          service/harbor-trivy                         ClusterIP      10.233.32.67    <none>        8080/TCP                     14d
+ingress-nginx   service/ingress-nginx-controller             LoadBalancer   10.233.55.231   10.0.6.21     80:30845/TCP,443:30308/TCP   14d
+ingress-nginx   service/ingress-nginx-controller-admission   ClusterIP      10.233.51.18    <none>        443/TCP                      14d
+jenkins         service/jenkins                              ClusterIP      10.233.57.65    <none>        8080/TCP                     14d
+jenkins         service/jenkins-agent                        ClusterIP      10.233.35.51    <none>        50000/TCP                    14d
+keycloak        service/keycloak                             ClusterIP      10.233.29.73    <none>        8080/TCP,8443/TCP            13d
+keycloak        service/keycloak-postgres                    ClusterIP      10.233.16.219   <none>        5432/TCP                     13d
+keycloak        service/keycloak-postgres-headless           ClusterIP      None            <none>        5432/TCP                     13d
+kube-system     service/coredns                              ClusterIP      10.233.0.3      <none>        53/UDP,53/TCP,9153/TCP       14d
+sonarqube       service/sonar-postgres                       ClusterIP      10.233.21.41    <none>        5432/TCP                     5h2m
+sonarqube       service/sonarqube-sonarqube                  ClusterIP      10.233.48.194   <none>        9000/TCP                     5h2m
+trivy-system    service/trivy-operator                       ClusterIP      None            <none>        80/TCP                       6d
+trivy           service/trivy                                ClusterIP      10.233.41.204   <none>        4954/TCP                     14d
+
+NAMESPACE     NAME                          DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+kube-system   daemonset.apps/calico-node    1         1         1       1            1           kubernetes.io/os=linux   14d
+kube-system   daemonset.apps/kube-proxy     1         1         1       1            1           kubernetes.io/os=linux   14d
+kube-system   daemonset.apps/nodelocaldns   1         1         1       1            1           kubernetes.io/os=linux   14d
+
+NAMESPACE       NAME                                              READY   UP-TO-DATE   AVAILABLE   AGE
+cert-manager    deployment.apps/cert-manager                      1/1     1            1           14d
+cert-manager    deployment.apps/cert-manager-cainjector           1/1     1            1           14d
+cert-manager    deployment.apps/cert-manager-webhook              1/1     1            1           14d
+default         deployment.apps/cicd123                           1/1     1            1           6d5h
+default         deployment.apps/nfs-subdir-external-provisioner   1/1     1            1           14d
+flux-system     deployment.apps/helm-controller                   1/1     1            1           22h
+flux-system     deployment.apps/image-automation-controller       1/1     1            1           3h17m
+flux-system     deployment.apps/image-reflector-controller        1/1     1            1           3h17m
+flux-system     deployment.apps/kustomize-controller              1/1     1            1           22h
+flux-system     deployment.apps/notification-controller           1/1     1            1           22h
+flux-system     deployment.apps/source-controller                 1/1     1            1           22h
+flux            deployment.apps/flux-operator                     1/1     1            1           14d
+flux            deployment.apps/helm-controller                   1/1     1            1           14d
+flux            deployment.apps/image-automation-controller       1/1     1            1           14d
+flux            deployment.apps/image-reflector-controller        1/1     1            1           14d
+flux            deployment.apps/kustomize-controller              1/1     1            1           14d
+flux            deployment.apps/notification-controller           1/1     1            1           14d
+flux            deployment.apps/source-controller                 1/1     1            1           14d
+harbor          deployment.apps/harbor-core                       1/1     1            1           14d
+harbor          deployment.apps/harbor-jobservice                 1/1     1            1           14d
+harbor          deployment.apps/harbor-portal                     1/1     1            1           14d
+harbor          deployment.apps/harbor-registry                   1/1     1            1           14d
+ingress-nginx   deployment.apps/ingress-nginx-controller          1/1     1            1           14d
+keycloak        deployment.apps/keycloak                          1/1     1            1           13d
+kube-system     deployment.apps/calico-kube-controllers           1/1     1            1           14d
+kube-system     deployment.apps/coredns                           1/1     1            1           14d
+kube-system     deployment.apps/dns-autoscaler                    1/1     1            1           14d
+trivy-system    deployment.apps/trivy-operator                    1/1     1            1           6d
+
+NAMESPACE       NAME                                                        DESIRED   CURRENT   READY   AGE
+cert-manager    replicaset.apps/cert-manager-7dd8c669df                     1         1         1       14d
+cert-manager    replicaset.apps/cert-manager-cainjector-7f5bd9c869          1         1         1       14d
+cert-manager    replicaset.apps/cert-manager-webhook-7b55b785f              1         1         1       14d
+default         replicaset.apps/cicd123-55fc8d84b7                          0         0         0       6d4h
+default         replicaset.apps/cicd123-57fc56ddb                           0         0         0       5d5h
+default         replicaset.apps/cicd123-59d6f65b69                          0         0         0       6d5h
+default         replicaset.apps/cicd123-5cf89ff85b                          1         1         1       22h
+default         replicaset.apps/cicd123-66dd9f5c49                          0         0         0       5d22h
+default         replicaset.apps/cicd123-68f65fd8c5                          0         0         0       5d5h
+default         replicaset.apps/cicd123-6b99fd9c5f                          0         0         0       5d5h
+default         replicaset.apps/cicd123-7689dfdbd4                          0         0         0       5d3h
+default         replicaset.apps/cicd123-787cf75468                          0         0         0       5d4h
+default         replicaset.apps/cicd123-7dbbbcc6c4                          0         0         0       5d3h
+default         replicaset.apps/cicd123-847f7ddb86                          0         0         0       6d5h
+default         replicaset.apps/nfs-subdir-external-provisioner-fcd66fc96   1         1         1       14d
+flux-system     replicaset.apps/helm-controller-744dd856d8                  1         1         1       22h
+flux-system     replicaset.apps/image-automation-controller-56476f7fdf      1         1         1       25m
+flux-system     replicaset.apps/image-automation-controller-57968b6548      0         0         0       109m
+flux-system     replicaset.apps/image-automation-controller-66d7cf77dc      0         0         0       49m
+flux-system     replicaset.apps/image-automation-controller-7c8fb8c764      0         0         0       49m
+flux-system     replicaset.apps/image-automation-controller-7dfbdd7b8f      0         0         0       69m
+flux-system     replicaset.apps/image-automation-controller-7f6b6899        0         0         0       114m
+flux-system     replicaset.apps/image-automation-controller-8469c6c6d5      0         0         0       111m
+flux-system     replicaset.apps/image-automation-controller-868c57df67      0         0         0       119m
+flux-system     replicaset.apps/image-automation-controller-b9d55df7d       0         0         0       3h17m
+flux-system     replicaset.apps/image-reflector-controller-54d9fdfccb       0         0         0       114m
+flux-system     replicaset.apps/image-reflector-controller-6698dcf78b       0         0         0       111m
+flux-system     replicaset.apps/image-reflector-controller-6c9d8cdfd8       0         0         0       119m
+flux-system     replicaset.apps/image-reflector-controller-6d5c454488       0         0         0       49m
+flux-system     replicaset.apps/image-reflector-controller-74f5554c7        0         0         0       109m
+flux-system     replicaset.apps/image-reflector-controller-7b88556686       1         1         1       25m
+flux-system     replicaset.apps/image-reflector-controller-85f5dc9bfd       0         0         0       69m
+flux-system     replicaset.apps/image-reflector-controller-b4bc44c48        0         0         0       49m
+flux-system     replicaset.apps/image-reflector-controller-b7c4b48f7        0         0         0       3h17m
+flux-system     replicaset.apps/kustomize-controller-5b4ffc8554             1         1         1       22h
+flux-system     replicaset.apps/notification-controller-78b57db948          1         1         1       22h
+flux-system     replicaset.apps/source-controller-5d44b8b787                1         1         1       22h
+flux            replicaset.apps/flux-operator-5ffd7c8d74                    1         1         1       14d
+flux            replicaset.apps/helm-controller-89d79966b                   1         1         1       14d
+flux            replicaset.apps/image-automation-controller-655d9d4649      1         1         1       14d
+flux            replicaset.apps/image-reflector-controller-5966b7b5bd       0         0         0       6d
+flux            replicaset.apps/image-reflector-controller-6589679466       1         1         1       14d
+flux            replicaset.apps/image-reflector-controller-6d696b87d7       0         0         0       6d
+flux            replicaset.apps/image-reflector-controller-9d7f7549b        0         0         0       6d1h
+flux            replicaset.apps/image-reflector-controller-ff884b96c        0         0         0       6d
+flux            replicaset.apps/kustomize-controller-db587f48b              1         1         1       14d
+flux            replicaset.apps/notification-controller-698cd4c9cc          1         1         1       14d
+flux            replicaset.apps/source-controller-5565b5466b                0         0         0       6d
+flux            replicaset.apps/source-controller-646bc964d5                0         0         0       6d1h
+flux            replicaset.apps/source-controller-6767667d5f                0         0         0       6d1h
+flux            replicaset.apps/source-controller-6fc99b4c95                0         0         0       6d
+flux            replicaset.apps/source-controller-85fb4974f4                1         1         1       14d
+flux            replicaset.apps/source-controller-d548f6b7                  0         0         0       6d
+harbor          replicaset.apps/harbor-core-5d5558589f                      1         1         1       14d
+harbor          replicaset.apps/harbor-jobservice-6c98444569                1         1         1       14d
+harbor          replicaset.apps/harbor-portal-7c585d7986                    1         1         1       14d
+harbor          replicaset.apps/harbor-registry-7746cbc56b                  1         1         1       14d
+ingress-nginx   replicaset.apps/ingress-nginx-controller-6ff8676445         1         1         1       14d
+keycloak        replicaset.apps/keycloak-5fc8dbbdd5                         1         1         1       13d
+kube-system     replicaset.apps/calico-kube-controllers-dbf6dc49            1         1         1       14d
+kube-system     replicaset.apps/coredns-5c54f84c97                          0         0         0       14d
+kube-system     replicaset.apps/coredns-6885f66fd6                          0         0         0       6d3h
+kube-system     replicaset.apps/coredns-76fd598664                          0         0         0       6d2h
+kube-system     replicaset.apps/coredns-79b4b76f66                          1         1         1       6d1h
+kube-system     replicaset.apps/coredns-899bd4fb5                           0         0         0       6d3h
+kube-system     replicaset.apps/coredns-c69c65788                           0         0         0       6d3h
+kube-system     replicaset.apps/coredns-f86698fb5                           0         0         0       6d3h
+kube-system     replicaset.apps/dns-autoscaler-676999957f                   1         1         1       14d
+trivy-system    replicaset.apps/trivy-operator-5b884bbb96                   1         1         1       5d3h
+trivy-system    replicaset.apps/trivy-operator-66dfd865c                    0         0         0       5d4h
+trivy-system    replicaset.apps/trivy-operator-67cd6985c7                   0         0         0       5d5h
+trivy-system    replicaset.apps/trivy-operator-6f44b99fc8                   0         0         0       6d
+trivy-system    replicaset.apps/trivy-operator-bdccf66df                    0         0         0       5d5h
+
+NAMESPACE   NAME                                   READY   AGE
+harbor      statefulset.apps/harbor-database       1/1     14d
+harbor      statefulset.apps/harbor-redis          1/1     14d
+harbor      statefulset.apps/harbor-trivy          1/1     14d
+jenkins     statefulset.apps/jenkins               1/1     14d
+keycloak    statefulset.apps/keycloak-postgres     1/1     13d
+sonarqube   statefulset.apps/sonar-postgres        1/1     5h2m
+sonarqube   statefulset.apps/sonarqube-sonarqube   1/1     5h2m
+trivy       statefulset.apps/trivy                 1/1     14d
+
+NAMESPACE      NAME                                            STATUS    COMPLETIONS   DURATION   AGE
+trivy-system   job.batch/scan-vulnerabilityreport-645bb8f685   Running   0/1           13s        13s
+trivy-system   job.batch/scan-vulnerabilityreport-67679699c8   Running   0/1           106s       106s
+trivy-system   job.batch/scan-vulnerabilityreport-6fc6988f79   Running   0/1           6s         6s
+trivy-system   job.batch/scan-vulnerabilityreport-84566b95c9   Running   0/1           1s         1s

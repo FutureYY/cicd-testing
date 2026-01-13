@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Spin the Wheel</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        input, button { padding: 10px; margin: 5px; font-size: 16px; }
+        #result { font-size: 24px; margin-top: 20px; color: green; }
+    </style>
+</head>
+<body>
+    <h1>Spin the Wheel</h1>
+    <form th:action="@{/spin}" method="post">
+        <input type="text" name="options" placeholder="Option1,Option2,Option3" size="50" required>
+        <button type="submit">Spin</button>
+    </form>
+
+    <div id="result" th:text="${result}"></div>
+</body>
+</html>

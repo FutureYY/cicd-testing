@@ -1,0 +1,4976 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/containerID: a527f260e30be1e3d54283a222256443643c96069c3bd091ed6d659196e35ad6
+      cni.projectcalico.org/podIP: 10.233.86.110/32
+      cni.projectcalico.org/podIPs: 10.233.86.110/32
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generateName: helm-controller-744dd856d8-
+    labels:
+      app: helm-controller
+      app.kubernetes.io/component: helm-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 744dd856d8
+    name: helm-controller-744dd856d8-rqrvt
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: helm-controller-744dd856d8
+      uid: dd703b18-4013-4042-a040-ea2a82a4c7a1
+    resourceVersion: "3525553"
+    uid: c6bfaabd-ff4e-443d-9606-3b06c9c41cd4
+  spec:
+    containers:
+    - args:
+      - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+      - --watch-all-namespaces=true
+      - --log-level=info
+      - --log-encoding=json
+      - --enable-leader-election
+      env:
+      - name: RUNTIME_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      - name: GOMEMLIMIT
+        valueFrom:
+          resourceFieldRef:
+            containerName: manager
+            divisor: "0"
+            resource: limits.memory
+      image: ghcr.io/fluxcd/helm-controller:v1.4.5
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: manager
+      ports:
+      - containerPort: 8080
+        name: http-prom
+        protocol: TCP
+      - containerPort: 9440
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /readyz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 64Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-9n9tk
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ste-test-cicd
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1337
+    serviceAccount: helm-controller
+    serviceAccountName: helm-controller
+    terminationGracePeriodSeconds: 600
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: temp
+    - name: kube-api-access-9n9tk
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:39Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:39Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:39Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://f65af60f2b30a27b13ce11300f90626ea1399f593547b09e20c7f9c3230649ba
+      image: ghcr.io/fluxcd/helm-controller:v1.4.5
+      imageID: ghcr.io/fluxcd/helm-controller@sha256:d8d8fc2fb46c554e28071f1e4879be33491e71fdd3e0e41f61bb494a72c6dffc
+      lastState:
+        terminated:
+          containerID: containerd://00f50b997f3c2eaa253b41c4ab90355d0d169de8f7ec187ba135c47e303f1204
+          exitCode: 255
+          finishedAt: "2026-01-13T03:48:22Z"
+          reason: Unknown
+          startedAt: "2026-01-12T08:36:21Z"
+      name: manager
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2026-01-13T03:48:38Z"
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-9n9tk
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.6.20
+    hostIPs:
+    - ip: 10.0.6.20
+    phase: Running
+    podIP: 10.233.86.110
+    podIPs:
+    - ip: 10.233.86.110
+    qosClass: Burstable
+    startTime: "2026-01-12T08:36:17Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/containerID: e9917f46aac69681ceeabcb8ff37b0c0c59bd60994ad4068de5c106b6011f497
+      cni.projectcalico.org/podIP: 10.233.86.85/32
+      cni.projectcalico.org/podIPs: 10.233.86.85/32
+      kubectl.kubernetes.io/restartedAt: "2026-01-13T07:03:02Z"
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-01-13T07:03:02Z"
+    generateName: image-automation-controller-56476f7fdf-
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 56476f7fdf
+    name: image-automation-controller-56476f7fdf-ml8d9
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: image-automation-controller-56476f7fdf
+      uid: b47b4f91-62e5-46e4-b925-80304cf039c0
+    resourceVersion: "3586019"
+    uid: f5fe38df-39b0-41a4-ba35-77dfd5f7654e
+  spec:
+    containers:
+    - args:
+      - --watch-all-namespaces
+      - --log-level=info
+      - --log-encoding=json
+      - --enable-leader-election
+      env:
+      - name: RUNTIME_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      image: fluxcd/image-automation-controller:v1.0.4
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: manager
+      ports:
+      - containerPort: 8080
+        name: http-prom
+        protocol: TCP
+      - containerPort: 9440
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /readyz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 64Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fgd6n
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ste-test-cicd
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1337
+    serviceAccount: flux-images
+    serviceAccountName: flux-images
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: temp
+    - name: kube-api-access-fgd6n
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:14Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:13Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:14Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:14Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:13Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://c2fcba4d035cbe2644ca5b23c8629d2fa3464fdb11e3d961a3d89b0352b5af7d
+      image: docker.io/fluxcd/image-automation-controller:v1.0.4
+      imageID: docker.io/fluxcd/image-automation-controller@sha256:f9383dccb80ec65e274648941af623ce74084d25026e14389111c14b630efece
+      lastState: {}
+      name: manager
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-01-13T07:03:14Z"
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-fgd6n
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.6.20
+    hostIPs:
+    - ip: 10.0.6.20
+    phase: Running
+    podIP: 10.233.86.85
+    podIPs:
+    - ip: 10.233.86.85
+    qosClass: Burstable
+    startTime: "2026-01-13T07:03:13Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/containerID: f24b02da200bd6583995e5414f30a67b225607ddd17a88f3c781545dd154cc40
+      cni.projectcalico.org/podIP: 10.233.86.115/32
+      cni.projectcalico.org/podIPs: 10.233.86.115/32
+      kubectl.kubernetes.io/restartedAt: "2026-01-13T07:03:02Z"
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-01-13T07:03:02Z"
+    generateName: image-reflector-controller-7b88556686-
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 7b88556686
+    name: image-reflector-controller-7b88556686-kzhdm
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: image-reflector-controller-7b88556686
+      uid: b5f68e72-7ddc-4988-a771-8a8607f97ad7
+    resourceVersion: "3585922"
+    uid: 0a1aafde-b1ca-4892-920c-f897ba367a8d
+  spec:
+    containers:
+    - args:
+      - --watch-all-namespaces
+      - --log-level=info
+      - --log-encoding=json
+      - --enable-leader-election
+      env:
+      - name: RUNTIME_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      image: fluxcd/image-reflector-controller:v1.0.4
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: manager
+      ports:
+      - containerPort: 8080
+        name: http-prom
+        protocol: TCP
+      - containerPort: 9440
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /readyz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 64Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /data
+        name: data
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-wjrgw
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ste-test-cicd
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1337
+    serviceAccount: flux-images
+    serviceAccountName: flux-images
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: temp
+    - emptyDir: {}
+      name: data
+    - name: kube-api-access-wjrgw
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:02Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:02Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:02Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:02Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T07:03:02Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://f6fd503c3490585719c9614554c88b305780f575c7e5a555bcf60a7bdf49d738
+      image: docker.io/fluxcd/image-reflector-controller:v1.0.4
+      imageID: docker.io/fluxcd/image-reflector-controller@sha256:0bdc30aea2b7cdfea02d0f6d53c06b9df0ea1c6516b85ed523792e222329c039
+      lastState: {}
+      name: manager
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2026-01-13T07:03:02Z"
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /data
+        name: data
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-wjrgw
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.6.20
+    hostIPs:
+    - ip: 10.0.6.20
+    phase: Running
+    podIP: 10.233.86.115
+    podIPs:
+    - ip: 10.233.86.115
+    qosClass: Burstable
+    startTime: "2026-01-13T07:03:02Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/containerID: c3277347c6a5af9f84043a830b9218f7c5fae64e5957e6ace2195de6f424e6c9
+      cni.projectcalico.org/podIP: 10.233.86.126/32
+      cni.projectcalico.org/podIPs: 10.233.86.126/32
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generateName: kustomize-controller-5b4ffc8554-
+    labels:
+      app: kustomize-controller
+      app.kubernetes.io/component: kustomize-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 5b4ffc8554
+    name: kustomize-controller-5b4ffc8554-mr2kq
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: kustomize-controller-5b4ffc8554
+      uid: b1c90ef3-f22c-4fac-9558-84951794e4da
+    resourceVersion: "3525630"
+    uid: 8ba44b90-677c-4db9-b4d7-e6a897838676
+  spec:
+    containers:
+    - args:
+      - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+      - --watch-all-namespaces=true
+      - --log-level=info
+      - --log-encoding=json
+      - --enable-leader-election
+      env:
+      - name: RUNTIME_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      - name: GOMEMLIMIT
+        valueFrom:
+          resourceFieldRef:
+            containerName: manager
+            divisor: "0"
+            resource: limits.memory
+      image: ghcr.io/fluxcd/kustomize-controller:v1.7.3
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: manager
+      ports:
+      - containerPort: 8080
+        name: http-prom
+        protocol: TCP
+      - containerPort: 9440
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /readyz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 64Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-hw7ng
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ste-test-cicd
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1337
+    serviceAccount: kustomize-controller
+    serviceAccountName: kustomize-controller
+    terminationGracePeriodSeconds: 60
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: temp
+    - name: kube-api-access-hw7ng
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:41Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:41Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:41Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://6c61d8d4a8be93e54c53c21b63cfd7bfbe9e8f7445c4b311c2bfeed047bd43a7
+      image: ghcr.io/fluxcd/kustomize-controller:v1.7.3
+      imageID: ghcr.io/fluxcd/kustomize-controller@sha256:e8ca82d66dafdd8ef77e0917f4adec53478075130ac61264dc0f91eb0f8cb6ce
+      lastState:
+        terminated:
+          containerID: containerd://430877dfe84ae77e2eec7cfc12f6b35975aa489b2b564d6bd90876501602b159
+          exitCode: 255
+          finishedAt: "2026-01-13T03:48:22Z"
+          reason: Unknown
+          startedAt: "2026-01-12T08:36:20Z"
+      name: manager
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2026-01-13T03:48:40Z"
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-hw7ng
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.6.20
+    hostIPs:
+    - ip: 10.0.6.20
+    phase: Running
+    podIP: 10.233.86.126
+    podIPs:
+    - ip: 10.233.86.126
+    qosClass: Burstable
+    startTime: "2026-01-12T08:36:17Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/containerID: b6f9557854adf9205e237cb9265176f2d2be7a75c2bb607c80b8118cf75b504e
+      cni.projectcalico.org/podIP: 10.233.86.72/32
+      cni.projectcalico.org/podIPs: 10.233.86.72/32
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generateName: notification-controller-78b57db948-
+    labels:
+      app: notification-controller
+      app.kubernetes.io/component: notification-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 78b57db948
+    name: notification-controller-78b57db948-mbkjv
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: notification-controller-78b57db948
+      uid: 4698ad32-1f75-46a0-9ad3-61245d86618e
+    resourceVersion: "3525584"
+    uid: 0bf9ea6e-876c-4424-97bf-3fa67465d3e0
+  spec:
+    containers:
+    - args:
+      - --watch-all-namespaces=true
+      - --log-level=info
+      - --log-encoding=json
+      - --enable-leader-election
+      env:
+      - name: RUNTIME_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      - name: GOMEMLIMIT
+        valueFrom:
+          resourceFieldRef:
+            containerName: manager
+            divisor: "0"
+            resource: limits.memory
+      image: ghcr.io/fluxcd/notification-controller:v1.7.5
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: manager
+      ports:
+      - containerPort: 9090
+        name: http
+        protocol: TCP
+      - containerPort: 9292
+        name: http-webhook
+        protocol: TCP
+      - containerPort: 8080
+        name: http-prom
+        protocol: TCP
+      - containerPort: 9440
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /readyz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 64Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97znh
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ste-test-cicd
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1337
+    serviceAccount: notification-controller
+    serviceAccountName: notification-controller
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: temp
+    - name: kube-api-access-97znh
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:39Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:40Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:40Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://fbb3cc46063e0fbdf994a157ce07108f5b72def8dd571b985f8da97abfb7ab40
+      image: ghcr.io/fluxcd/notification-controller:v1.7.5
+      imageID: ghcr.io/fluxcd/notification-controller@sha256:ba723a55f7c7c7feedd50bb5db0ff2dd9a3b0ae85b50f61a0457184025b38c54
+      lastState:
+        terminated:
+          containerID: containerd://143d5f3598196ee3566fe893d283756a97b5b0e905e26edfe74f168de3c726cf
+          exitCode: 255
+          finishedAt: "2026-01-13T03:48:22Z"
+          reason: Unknown
+          startedAt: "2026-01-12T08:36:19Z"
+      name: manager
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2026-01-13T03:48:38Z"
+      volumeMounts:
+      - mountPath: /tmp
+        name: temp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-97znh
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.6.20
+    hostIPs:
+    - ip: 10.0.6.20
+    phase: Running
+    podIP: 10.233.86.72
+    podIPs:
+    - ip: 10.233.86.72
+    qosClass: Burstable
+    startTime: "2026-01-12T08:36:17Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      cni.projectcalico.org/containerID: 817418b2dee52fb3fdb81f2a0eca1542d177912d15c6e2e20c977cdda5d5752b
+      cni.projectcalico.org/podIP: 10.233.86.67/32
+      cni.projectcalico.org/podIPs: 10.233.86.67/32
+      prometheus.io/port: "8080"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generateName: source-controller-5d44b8b787-
+    labels:
+      app: source-controller
+      app.kubernetes.io/component: source-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 5d44b8b787
+    name: source-controller-5d44b8b787-qh29n
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: source-controller-5d44b8b787
+      uid: 533c5f5d-9eca-433c-ad1a-86cfe9d4e7de
+    resourceVersion: "3526277"
+    uid: bdc3ac52-d622-4713-9373-135b622a3158
+  spec:
+    containers:
+    - args:
+      - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+      - --watch-all-namespaces=true
+      - --log-level=info
+      - --log-encoding=json
+      - --enable-leader-election
+      - --storage-path=/data
+      - --storage-adv-addr=source-controller.$(RUNTIME_NAMESPACE).svc.cluster.local.
+      env:
+      - name: RUNTIME_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.namespace
+      - name: TUF_ROOT
+        value: /tmp/.sigstore
+      - name: GOMEMLIMIT
+        valueFrom:
+          resourceFieldRef:
+            containerName: manager
+            divisor: "0"
+            resource: limits.memory
+      image: ghcr.io/fluxcd/source-controller:v1.7.4
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /healthz
+          port: healthz
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      name: manager
+      ports:
+      - containerPort: 9090
+        name: http
+        protocol: TCP
+      - containerPort: 8080
+        name: http-prom
+        protocol: TCP
+      - containerPort: 9440
+        name: healthz
+        protocol: TCP
+      readinessProbe:
+        failureThreshold: 3
+        httpGet:
+          path: /
+          port: http
+          scheme: HTTP
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 1
+      resources:
+        limits:
+          cpu: "1"
+          memory: 1Gi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /data
+        name: data
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-8c6fv
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    nodeName: ste-test-cicd
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000000000
+    priorityClassName: system-cluster-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      fsGroup: 1337
+    serviceAccount: source-controller
+    serviceAccountName: source-controller
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - emptyDir: {}
+      name: data
+    - emptyDir: {}
+      name: tmp
+    - name: kube-api-access-8c6fv
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:48:40Z"
+      status: "True"
+      type: PodReadyToStartContainers
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:49:31Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-13T03:49:31Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2026-01-12T08:36:17Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: containerd://379bc8ae8611d2d2c563f95e833cb6647db6d2de56ac7c7718c657c91e896b51
+      image: ghcr.io/fluxcd/source-controller:v1.7.4
+      imageID: ghcr.io/fluxcd/source-controller@sha256:16f21ac1795528df80ddef51ccbb14a57b78ea26e66dc8551636ef9a3cec71b3
+      lastState:
+        terminated:
+          containerID: containerd://ced9aff95e8414e5453d2280e1160dc79103429c9a889cad40294091697f1b99
+          exitCode: 255
+          finishedAt: "2026-01-13T03:48:22Z"
+          reason: Unknown
+          startedAt: "2026-01-12T08:36:19Z"
+      name: manager
+      ready: true
+      restartCount: 1
+      started: true
+      state:
+        running:
+          startedAt: "2026-01-13T03:48:39Z"
+      volumeMounts:
+      - mountPath: /data
+        name: data
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-8c6fv
+        readOnly: true
+        recursiveReadOnly: Disabled
+    hostIP: 10.0.6.20
+    hostIPs:
+    - ip: 10.0.6.20
+    phase: Running
+    podIP: 10.233.86.67
+    podIPs:
+    - ip: 10.233.86.67
+    qosClass: Burstable
+    startTime: "2026-01-12T08:36:17Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    labels:
+      app.kubernetes.io/component: notification-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      control-plane: controller
+    name: notification-controller
+    namespace: flux-system
+    resourceVersion: "3203917"
+    uid: 67f483cd-57cb-47c4-8ecf-b8d4880ecdf0
+  spec:
+    clusterIP: 10.233.54.124
+    clusterIPs:
+    - 10.233.54.124
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    selector:
+      app: notification-controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    labels:
+      app.kubernetes.io/component: source-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      control-plane: controller
+    name: source-controller
+    namespace: flux-system
+    resourceVersion: "3203919"
+    uid: 3a0aad8f-eb02-49c2-8d49-febdf39c9b0e
+  spec:
+    clusterIP: 10.233.54.73
+    clusterIPs:
+    - 10.233.54.73
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    selector:
+      app: source-controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    labels:
+      app.kubernetes.io/component: notification-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      control-plane: controller
+    name: webhook-receiver
+    namespace: flux-system
+    resourceVersion: "3203925"
+    uid: bc706926-3b30-406b-aff0-d62f9f3c7991
+  spec:
+    clusterIP: 10.233.36.131
+    clusterIPs:
+    - 10.233.36.131
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http-webhook
+    selector:
+      app: notification-controller
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: helm-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      control-plane: controller
+    name: helm-controller
+    namespace: flux-system
+    resourceVersion: "3204159"
+    uid: e3baf4e1-d933-483a-be12-23205d0734b3
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: helm-controller
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: helm-controller
+          app.kubernetes.io/component: helm-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+      spec:
+        containers:
+        - args:
+          - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/helm-controller:v1.4.5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: helm-controller
+        serviceAccountName: helm-controller
+        terminationGracePeriodSeconds: 600
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-12T08:36:22Z"
+      lastUpdateTime: "2026-01-12T08:36:22Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-01-12T08:36:17Z"
+      lastUpdateTime: "2026-01-12T08:36:22Z"
+      message: ReplicaSet "helm-controller-744dd856d8" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "9"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"control-plane":"controller"},"name":"image-automation-controller","namespace":"flux-system"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"image-automation-controller"}},"template":{"metadata":{"annotations":{"prometheus.io/port":"8080","prometheus.io/scrape":"true"},"labels":{"app":"image-automation-controller"}},"spec":{"containers":[{"args":["--watch-all-namespaces","--log-level=info","--log-encoding=json","--enable-leader-election"],"env":[{"name":"RUNTIME_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"image":"fluxcd/image-automation-controller:v1.0.4","imagePullPolicy":"IfNotPresent","livenessProbe":{"httpGet":{"path":"/healthz","port":"healthz"}},"name":"manager","ports":[{"containerPort":8080,"name":"http-prom","protocol":"TCP"},{"containerPort":9440,"name":"healthz","protocol":"TCP"}],"readinessProbe":{"httpGet":{"path":"/readyz","port":"healthz"}},"resources":{"limits":{"cpu":"1000m","memory":"1Gi"},"requests":{"cpu":"100m","memory":"64Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}},"volumeMounts":[{"mountPath":"/tmp","name":"temp"}]}],"securityContext":{"fsGroup":1337},"terminationGracePeriodSeconds":10,"volumes":[{"emptyDir":{},"name":"temp"}]}}}}
+    creationTimestamp: "2026-01-13T04:10:50Z"
+    generation: 9
+    labels:
+      control-plane: controller
+    name: image-automation-controller
+    namespace: flux-system
+    resourceVersion: "3586034"
+    uid: 6c48662f-5903-4584-94f5-6d1520aee801
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: image-automation-controller
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T07:03:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-13T04:10:51Z"
+      lastUpdateTime: "2026-01-13T04:10:51Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-01-13T06:51:12Z"
+      lastUpdateTime: "2026-01-13T07:03:15Z"
+      message: ReplicaSet "image-automation-controller-56476f7fdf" has successfully
+        progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 9
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "9"
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"control-plane":"controller"},"name":"image-reflector-controller","namespace":"flux-system"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"image-reflector-controller"}},"template":{"metadata":{"annotations":{"prometheus.io/port":"8080","prometheus.io/scrape":"true"},"labels":{"app":"image-reflector-controller"}},"spec":{"containers":[{"args":["--watch-all-namespaces","--log-level=info","--log-encoding=json","--enable-leader-election"],"env":[{"name":"RUNTIME_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"image":"fluxcd/image-reflector-controller:v1.0.4","imagePullPolicy":"IfNotPresent","livenessProbe":{"httpGet":{"path":"/healthz","port":"healthz"}},"name":"manager","ports":[{"containerPort":8080,"name":"http-prom","protocol":"TCP"},{"containerPort":9440,"name":"healthz","protocol":"TCP"}],"readinessProbe":{"httpGet":{"path":"/readyz","port":"healthz"}},"resources":{"limits":{"cpu":"1000m","memory":"1Gi"},"requests":{"cpu":"100m","memory":"64Mi"}},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}},"volumeMounts":[{"mountPath":"/tmp","name":"temp"},{"mountPath":"/data","name":"data"}]}],"securityContext":{"fsGroup":1337},"terminationGracePeriodSeconds":10,"volumes":[{"emptyDir":{},"name":"temp"},{"emptyDir":{},"name":"data"}]}}}}
+    creationTimestamp: "2026-01-13T04:10:59Z"
+    generation: 9
+    labels:
+      control-plane: controller
+    name: image-reflector-controller
+    namespace: flux-system
+    resourceVersion: "3585940"
+    uid: aee8c72a-c97d-439d-a47d-c35358321827
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T07:03:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-13T05:39:53Z"
+      lastUpdateTime: "2026-01-13T05:39:53Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-01-13T06:50:52Z"
+      lastUpdateTime: "2026-01-13T07:03:02Z"
+      message: ReplicaSet "image-reflector-controller-7b88556686" has successfully
+        progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 9
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: kustomize-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      control-plane: controller
+    name: kustomize-controller
+    namespace: flux-system
+    resourceVersion: "3204146"
+    uid: be246501-0f52-4890-8187-448121c1521d
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: kustomize-controller
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: kustomize-controller
+          app.kubernetes.io/component: kustomize-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+      spec:
+        containers:
+        - args:
+          - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/kustomize-controller:v1.7.3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: kustomize-controller
+        serviceAccountName: kustomize-controller
+        terminationGracePeriodSeconds: 60
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-12T08:36:21Z"
+      lastUpdateTime: "2026-01-12T08:36:21Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-01-12T08:36:17Z"
+      lastUpdateTime: "2026-01-12T08:36:21Z"
+      message: ReplicaSet "kustomize-controller-5b4ffc8554" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: notification-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      control-plane: controller
+    name: notification-controller
+    namespace: flux-system
+    resourceVersion: "3204096"
+    uid: f4a6fc8b-d34f-4f01-bc0a-564187a48093
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: notification-controller
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: notification-controller
+          app.kubernetes.io/component: notification-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/notification-controller:v1.7.5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 9090
+            name: http
+            protocol: TCP
+          - containerPort: 9292
+            name: http-webhook
+            protocol: TCP
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: notification-controller
+        serviceAccountName: notification-controller
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-12T08:36:19Z"
+      lastUpdateTime: "2026-01-12T08:36:19Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-01-12T08:36:17Z"
+      lastUpdateTime: "2026-01-12T08:36:19Z"
+      message: ReplicaSet "notification-controller-78b57db948" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: source-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      control-plane: controller
+    name: source-controller
+    namespace: flux-system
+    resourceVersion: "3526282"
+    uid: ead09ccd-b4b7-4f30-872d-83b89424987c
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: source-controller
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: source-controller
+          app.kubernetes.io/component: source-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+      spec:
+        containers:
+        - args:
+          - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          - --storage-path=/data
+          - --storage-adv-addr=source-controller.$(RUNTIME_NAMESPACE).svc.cluster.local.
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: TUF_ROOT
+            value: /tmp/.sigstore
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/source-controller:v1.7.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 9090
+            name: http
+            protocol: TCP
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: data
+          - mountPath: /tmp
+            name: tmp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: source-controller
+        serviceAccountName: source-controller
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: data
+        - emptyDir: {}
+          name: tmp
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-01-12T08:36:17Z"
+      lastUpdateTime: "2026-01-12T08:36:20Z"
+      message: ReplicaSet "source-controller-5d44b8b787" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2026-01-13T03:49:31Z"
+      lastUpdateTime: "2026-01-13T03:49:31Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app: helm-controller
+      app.kubernetes.io/component: helm-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 744dd856d8
+    name: helm-controller-744dd856d8
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: helm-controller
+      uid: e3baf4e1-d933-483a-be12-23205d0734b3
+    resourceVersion: "3204158"
+    uid: dd703b18-4013-4042-a040-ea2a82a4c7a1
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: helm-controller
+        pod-template-hash: 744dd856d8
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: helm-controller
+          app.kubernetes.io/component: helm-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+          pod-template-hash: 744dd856d8
+      spec:
+        containers:
+        - args:
+          - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/helm-controller:v1.4.5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: helm-controller
+        serviceAccountName: helm-controller
+        terminationGracePeriodSeconds: 600
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "9"
+    creationTimestamp: "2026-01-13T07:03:02Z"
+    generation: 1
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 56476f7fdf
+    name: image-automation-controller-56476f7fdf
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3586020"
+    uid: b47b4f91-62e5-46e4-b925-80304cf039c0
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 56476f7fdf
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T07:03:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 56476f7fdf
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "5"
+    creationTimestamp: "2026-01-13T05:39:37Z"
+    generation: 2
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 57968b6548
+    name: image-automation-controller-57968b6548
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3582283"
+    uid: d5716cd8-eece-4bfe-9ecb-ae904d9f384a
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 57968b6548
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:39:37Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 57968b6548
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "7"
+    creationTimestamp: "2026-01-13T06:39:12Z"
+    generation: 3
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 66d7cf77dc
+    name: image-automation-controller-66d7cf77dc
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3578607"
+    uid: daa865c6-6f61-4c2c-b9b7-514a9e69edb4
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 66d7cf77dc
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T06:19:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 66d7cf77dc
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "8"
+    creationTimestamp: "2026-01-13T06:39:36Z"
+    generation: 3
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 7c8fb8c764
+    name: image-automation-controller-7c8fb8c764
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3586031"
+    uid: 25c5706f-f18b-4ddf-9e5a-04bc96a83a33
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 7c8fb8c764
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T06:39:36Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 7c8fb8c764
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "6"
+    creationTimestamp: "2026-01-13T06:19:02Z"
+    generation: 2
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 7dfbdd7b8f
+    name: image-automation-controller-7dfbdd7b8f
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3578416"
+    uid: 882d09cd-1cd5-4c78-a5df-16554c463406
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 7dfbdd7b8f
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T06:19:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 7dfbdd7b8f
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2026-01-13T05:33:43Z"
+    generation: 3
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 7f6b6899
+    name: image-automation-controller-7f6b6899
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3559451"
+    uid: 358c69a1-6b0e-4041-bfad-bd7a0c6419c4
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 7f6b6899
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:33:43Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 7f6b6899
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "4"
+    creationTimestamp: "2026-01-13T05:37:34Z"
+    generation: 3
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 8469c6c6d5
+    name: image-automation-controller-8469c6c6d5
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3569230"
+    uid: aa725759-c314-4909-9d70-e67820d71415
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 8469c6c6d5
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:37:34Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 8469c6c6d5
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2026-01-13T05:29:40Z"
+    generation: 2
+    labels:
+      app: image-automation-controller
+      pod-template-hash: 868c57df67
+    name: image-automation-controller-868c57df67
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3558211"
+    uid: 99f6ee21-31a2-4b47-980d-120c6e90d25e
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: 868c57df67
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:29:40Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: 868c57df67
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-13T04:10:50Z"
+    generation: 2
+    labels:
+      app: image-automation-controller
+      pod-template-hash: b9d55df7d
+    name: image-automation-controller-b9d55df7d
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-automation-controller
+      uid: 6c48662f-5903-4584-94f5-6d1520aee801
+    resourceVersion: "3559952"
+    uid: ec48ea0f-c37a-47a9-ab53-241e340b28b3
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-automation-controller
+        pod-template-hash: b9d55df7d
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-automation-controller
+          pod-template-hash: b9d55df7d
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-automation-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2026-01-13T05:33:43Z"
+    generation: 3
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 54d9fdfccb
+    name: image-reflector-controller-54d9fdfccb
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3559411"
+    uid: d3ce275c-c3a4-4a34-b457-4666e2c1d5b7
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: 54d9fdfccb
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:33:43Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: 54d9fdfccb
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "4"
+    creationTimestamp: "2026-01-13T05:37:34Z"
+    generation: 3
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 6698dcf78b
+    name: image-reflector-controller-6698dcf78b
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3569218"
+    uid: 31c5ac5d-739a-48a0-b66d-b4817b05d478
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: 6698dcf78b
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:37:34Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: 6698dcf78b
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2026-01-13T05:29:40Z"
+    generation: 2
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 6c9d8cdfd8
+    name: image-reflector-controller-6c9d8cdfd8
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3558178"
+    uid: 62fa9945-37b1-41e1-81da-9ae2653f4d42
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: 6c9d8cdfd8
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:29:40Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: 6c9d8cdfd8
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "8"
+    creationTimestamp: "2026-01-13T06:39:35Z"
+    generation: 3
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 6d5c454488
+    name: image-reflector-controller-6d5c454488
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3585936"
+    uid: d83557a3-5570-40c3-a90e-0f48c535f684
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: 6d5c454488
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T06:39:35Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: 6d5c454488
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "5"
+    creationTimestamp: "2026-01-13T05:39:37Z"
+    generation: 3
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 74f5554c7
+    name: image-reflector-controller-74f5554c7
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3582108"
+    uid: 6433378f-2fd1-4a49-9fe9-03331506bf3d
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: 74f5554c7
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T05:39:37Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: 74f5554c7
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "9"
+    creationTimestamp: "2026-01-13T07:03:02Z"
+    generation: 1
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 7b88556686
+    name: image-reflector-controller-7b88556686
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3585923"
+    uid: b5f68e72-7ddc-4988-a771-8a8607f97ad7
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: 7b88556686
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T07:03:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: 7b88556686
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "6"
+    creationTimestamp: "2026-01-13T06:19:02Z"
+    generation: 2
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: 85f5dc9bfd
+    name: image-reflector-controller-85f5dc9bfd
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3578392"
+    uid: f58190a5-a527-465c-80db-9102b72d2e9c
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: 85f5dc9bfd
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T06:19:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: 85f5dc9bfd
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "7"
+    creationTimestamp: "2026-01-13T06:39:12Z"
+    generation: 3
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: b4bc44c48
+    name: image-reflector-controller-b4bc44c48
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3578571"
+    uid: 79734b69-c5bb-4964-a2a7-c6934ca9e325
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: b4bc44c48
+    template:
+      metadata:
+        annotations:
+          kubectl.kubernetes.io/restartedAt: "2026-01-13T06:19:02Z"
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: b4bc44c48
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: flux-images
+        serviceAccountName: flux-images
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 3
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-13T04:10:59Z"
+    generation: 2
+    labels:
+      app: image-reflector-controller
+      pod-template-hash: b7c4b48f7
+    name: image-reflector-controller-b7c4b48f7
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: image-reflector-controller
+      uid: aee8c72a-c97d-439d-a47d-c35358321827
+    resourceVersion: "3560256"
+    uid: 63be7e67-6ee1-4a3c-87a1-56521dc5b64d
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        app: image-reflector-controller
+        pod-template-hash: b7c4b48f7
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: image-reflector-controller
+          pod-template-hash: b7c4b48f7
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          image: fluxcd/image-reflector-controller:v1.0.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+          - mountPath: /data
+            name: data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+        - emptyDir: {}
+          name: data
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app: kustomize-controller
+      app.kubernetes.io/component: kustomize-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 5b4ffc8554
+    name: kustomize-controller-5b4ffc8554
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: kustomize-controller
+      uid: be246501-0f52-4890-8187-448121c1521d
+    resourceVersion: "3204145"
+    uid: b1c90ef3-f22c-4fac-9558-84951794e4da
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: kustomize-controller
+        pod-template-hash: 5b4ffc8554
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: kustomize-controller
+          app.kubernetes.io/component: kustomize-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+          pod-template-hash: 5b4ffc8554
+      spec:
+        containers:
+        - args:
+          - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/kustomize-controller:v1.7.3
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: kustomize-controller
+        serviceAccountName: kustomize-controller
+        terminationGracePeriodSeconds: 60
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app: notification-controller
+      app.kubernetes.io/component: notification-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 78b57db948
+    name: notification-controller-78b57db948
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: notification-controller
+      uid: f4a6fc8b-d34f-4f01-bc0a-564187a48093
+    resourceVersion: "3204094"
+    uid: 4698ad32-1f75-46a0-9ad3-61245d86618e
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: notification-controller
+        pod-template-hash: 78b57db948
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: notification-controller
+          app.kubernetes.io/component: notification-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+          pod-template-hash: 78b57db948
+      spec:
+        containers:
+        - args:
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/notification-controller:v1.7.5
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 9090
+            name: http
+            protocol: TCP
+          - containerPort: 9292
+            name: http-webhook
+            protocol: TCP
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /readyz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /tmp
+            name: temp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: notification-controller
+        serviceAccountName: notification-controller
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: temp
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "1"
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2026-01-12T08:36:17Z"
+    generation: 1
+    labels:
+      app: source-controller
+      app.kubernetes.io/component: source-controller
+      app.kubernetes.io/instance: flux-system
+      app.kubernetes.io/part-of: flux
+      app.kubernetes.io/version: v2.7.5
+      pod-template-hash: 5d44b8b787
+    name: source-controller-5d44b8b787
+    namespace: flux-system
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: source-controller
+      uid: ead09ccd-b4b7-4f30-872d-83b89424987c
+    resourceVersion: "3526280"
+    uid: 533c5f5d-9eca-433c-ad1a-86cfe9d4e7de
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: source-controller
+        pod-template-hash: 5d44b8b787
+    template:
+      metadata:
+        annotations:
+          prometheus.io/port: "8080"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          app: source-controller
+          app.kubernetes.io/component: source-controller
+          app.kubernetes.io/instance: flux-system
+          app.kubernetes.io/part-of: flux
+          app.kubernetes.io/version: v2.7.5
+          pod-template-hash: 5d44b8b787
+      spec:
+        containers:
+        - args:
+          - --events-addr=http://notification-controller.$(RUNTIME_NAMESPACE).svc.cluster.local./
+          - --watch-all-namespaces=true
+          - --log-level=info
+          - --log-encoding=json
+          - --enable-leader-election
+          - --storage-path=/data
+          - --storage-adv-addr=source-controller.$(RUNTIME_NAMESPACE).svc.cluster.local.
+          env:
+          - name: RUNTIME_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: TUF_ROOT
+            value: /tmp/.sigstore
+          - name: GOMEMLIMIT
+            valueFrom:
+              resourceFieldRef:
+                containerName: manager
+                divisor: "0"
+                resource: limits.memory
+          image: ghcr.io/fluxcd/source-controller:v1.7.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: healthz
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: manager
+          ports:
+          - containerPort: 9090
+            name: http
+            protocol: TCP
+          - containerPort: 8080
+            name: http-prom
+            protocol: TCP
+          - containerPort: 9440
+            name: healthz
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: data
+          - mountPath: /tmp
+            name: tmp
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-cluster-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 1337
+        serviceAccount: source-controller
+        serviceAccountName: source-controller
+        terminationGracePeriodSeconds: 10
+        volumes:
+        - emptyDir: {}
+          name: data
+        - emptyDir: {}
+          name: tmp
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+- apiVersion: image.toolkit.fluxcd.io/v1
+  kind: ImageRepository
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"image.toolkit.fluxcd.io/v1","kind":"ImageRepository","metadata":{"annotations":{},"name":"cicd123","namespace":"flux-system"},"spec":{"image":"harbor.lab.local/cicd123/cicd123","interval":"1m","secretRef":{"name":"harbor-credentials"}}}
+      reconcile.fluxcd.io/requestedAt: "2026-01-13T07:03:10.624610819Z"
+    creationTimestamp: "2026-01-13T02:38:26Z"
+    finalizers:
+    - finalizers.fluxcd.io
+    generation: 2
+    name: cicd123
+    namespace: flux-system
+    resourceVersion: "3594482"
+    uid: b81e3b66-7a21-4670-bdec-b2e11866ed92
+  spec:
+    exclusionList:
+    - ^.*\.sig$
+    image: harbor.lab.local/cicd123/cicd123
+    interval: 1m
+    provider: generic
+    secretRef:
+      name: harbor-credentials
+  status:
+    conditions:
+    - lastTransitionTime: "2026-01-13T07:29:57Z"
+      message: 'scanning: first scan'
+      observedGeneration: 2
+      reason: ProgressingWithRetry
+      status: "True"
+      type: Reconciling
+    - lastTransitionTime: "2026-01-13T07:14:57Z"
+      message: 'scan failed: Get "https://harbor.lab.local/v2/": dial tcp: lookup
+        harbor.lab.local on 169.254.25.10:53: no such host; Get "http://harbor.lab.local/v2/":
+        dial tcp: lookup harbor.lab.local on 169.254.25.10:53: no such host'
+      observedGeneration: 2
+      reason: ReadOperationFailed
+      status: "False"
+      type: Ready
+    lastHandledReconcileAt: "2026-01-13T07:03:10.624610819Z"
+    observedGeneration: -1
+- apiVersion: image.toolkit.fluxcd.io/v1
+  kind: ImagePolicy
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"image.toolkit.fluxcd.io/v1beta2","kind":"ImagePolicy","metadata":{"annotations":{},"name":"cicd123","namespace":"flux-system"},"spec":{"imageRepositoryRef":{"name":"cicd123"},"policy":{"semver":{"range":"\u003e=0.0.0"}}}}
+      reconcile.fluxcd.io/requestedAt: "2026-01-13T07:08:10.661763313Z"
+    creationTimestamp: "2026-01-13T02:38:26Z"
+    finalizers:
+    - finalizers.fluxcd.io
+    generation: 1
+    name: cicd123
+    namespace: flux-system
+    resourceVersion: "3598358"
+    uid: fd1962bc-2d9f-467e-aa66-55d5a21da80a
+  spec:
+    digestReflectionPolicy: Never
+    imageRepositoryRef:
+      name: cicd123
+    policy:
+      semver:
+        range: '>=0.0.0'
+  status:
+    conditions:
+    - lastTransitionTime: "2026-01-13T07:40:36Z"
+      message: 'processing object: new generation -1 -> 1'
+      observedGeneration: 1
+      reason: ProgressingWithRetry
+      status: "True"
+      type: Reconciling
+    - lastTransitionTime: "2026-01-13T02:40:44Z"
+      message: 'retrying in 30s error: no tags in database'
+      observedGeneration: 1
+      reason: DependencyNotReady
+      status: "False"
+      type: Ready
+    lastHandledReconcileAt: "2026-01-13T07:08:10.661763313Z"
+    observedGeneration: -1
+- apiVersion: image.toolkit.fluxcd.io/v1
+  kind: ImageUpdateAutomation
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"image.toolkit.fluxcd.io/v1beta2","kind":"ImageUpdateAutomation","metadata":{"annotations":{},"name":"cicd123","namespace":"flux-system"},"spec":{"git":{"checkout":{"ref":{"branch":"main"}},"commit":{"author":{"email":"flux-bot@users.noreply.github.com","name":"flux-bot"},"messageTemplate":"Update cicd123 image to {{range .Updated.Images}}{{.NewTag}}{{end}}"},"push":{"branch":"main"}},"interval":"1m","sourceRef":{"kind":"GitRepository","name":"flux-system"},"update":{"path":"./apps/cicd123","strategy":"Setters"}}}
+      reconcile.fluxcd.io/requestedAt: "2026-01-13T06:20:08.067712867Z"
+    creationTimestamp: "2026-01-13T02:38:26Z"
+    finalizers:
+    - finalizers.fluxcd.io
+    generation: 1
+    name: cicd123
+    namespace: flux-system
+    resourceVersion: "3598288"
+    uid: c3c142d8-bde9-4c86-834e-7fefaf6d0717
+  spec:
+    git:
+      checkout:
+        ref:
+          branch: main
+      commit:
+        author:
+          email: flux-bot@users.noreply.github.com
+          name: flux-bot
+        messageTemplate: Update cicd123 image to {{range .Updated.Images}}{{.NewTag}}{{end}}
+      push:
+        branch: main
+    interval: 1m
+    sourceRef:
+      kind: GitRepository
+      name: flux-system
+    update:
+      path: ./apps/cicd123
+      strategy: Setters
+  status:
+    conditions:
+    - lastTransitionTime: "2026-01-13T02:40:42Z"
+      message: repository up-to-date
+      observedGeneration: 1
+      reason: Succeeded
+      status: "True"
+      type: Ready
+    lastAutomationRunTime: "2026-01-13T07:40:19Z"
+    lastHandledReconcileAt: "2026-01-13T06:20:08.067712867Z"
+    observedGeneration: 1
+    observedSourceRevision: main@sha1:13e06fe87f595cc61f632cee3cd7b2f6bce59d95
+- apiVersion: kustomize.toolkit.fluxcd.io/v1
+  kind: Kustomization
+  metadata:
+    annotations:
+      reconcile.fluxcd.io/requestedAt: "2026-01-13T05:39:50.736079403Z"
+    creationTimestamp: "2026-01-12T08:36:21Z"
+    finalizers:
+    - finalizers.fluxcd.io
+    generation: 1
+    name: flux-system
+    namespace: flux-system
+    resourceVersion: "3595479"
+    uid: 9c1ff15a-f2fd-4f92-b7e2-4f6adb602d76
+  spec:
+    force: false
+    interval: 10m0s
+    path: ./clusters/ste-test-cicd
+    prune: true
+    sourceRef:
+      kind: GitRepository
+      name: flux-system
+  status:
+    conditions:
+    - lastTransitionTime: "2026-01-13T07:32:42Z"
+      message: Fetching manifests for revision main@sha1:13e06fe87f595cc61f632cee3cd7b2f6bce59d95
+        with a timeout of 9m30s
+      observedGeneration: 1
+      reason: Progressing
+      status: "True"
+      type: Reconciling
+    - lastTransitionTime: "2026-01-13T07:32:42Z"
+      message: Reconciliation in progress
+      observedGeneration: 1
+      reason: Progressing
+      status: Unknown
+      type: Ready
+    history:
+    - digest: sha256:5b1e4f188a58ac1f6405dc8882184691bf140de102a1b0b8f967c2adbc3fd1cc
+      firstReconciled: "2026-01-12T08:36:25Z"
+      lastReconciled: "2026-01-13T07:22:16Z"
+      lastReconciledDuration: 70.997791ms
+      lastReconciledStatus: ReconciliationSucceeded
+      metadata:
+        revision: main@sha1:13e06fe87f595cc61f632cee3cd7b2f6bce59d95
+      totalReconciliations: 81
+    inventory:
+      entries:
+      - id: default_cicd123__Service
+        v: v1
+      - id: default_cicd123_apps_Deployment
+        v: v1
+      - id: flux_cicd123_image.toolkit.fluxcd.io_ImagePolicy
+        v: v1beta2
+      - id: flux_cicd123_image.toolkit.fluxcd.io_ImageRepository
+        v: v1beta2
+      - id: flux_cicd123_image.toolkit.fluxcd.io_ImageUpdateAutomation
+        v: v1beta2
+      - id: default_cicd123_networking.k8s.io_Ingress
+        v: v1
+    lastAppliedRevision: main@sha1:13e06fe87f595cc61f632cee3cd7b2f6bce59d95
+    lastAttemptedRevision: main@sha1:13e06fe87f595cc61f632cee3cd7b2f6bce59d95
+    lastHandledReconcileAt: "2026-01-13T05:39:50.736079403Z"
+    observedGeneration: 1
+kind: List
+metadata:
+  resourceVersion: ""
