@@ -8,4 +8,6 @@ spec:
   interval: 1m
   secretRef:
     name: harbor-credentials
+  provider: generic
+  insecure: true
 
