@@ -1,9 +1,9 @@
 pipeline {
-  agent {
-    kubernetes {
-      label 'maven-agent'
-      defaultContainer 'maven'
-      yaml """
+    agent {
+        kubernetes {
+            label 'maven-agent'
+            defaultContainer 'maven'
+            yaml """
 apiVersion: v1
 kind: Pod
 spec:
@@ -11,7 +11,13 @@ spec:
   - name: maven
     image: maven:3.9.6-eclipse-temurin-17
     command:
-    - cat
+      - sh
+      - -c
+      - |
+        apt-get update &&
+        apt-get install -y ca-certificates git &&
+        update-ca-certificates &&
+        cat
     tty: true
     resources:
       requests:
@@ -20,35 +26,45 @@ spec:
       limits:
         cpu: 300m
         memory: 512Mi
+  - name: jnlp
+    image: jenkins/inbound-agent:latest
+    args: ['-url', 'http://jenkins-agent:50000', '\${computerName}']
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
 """
-    }
-  }
-
-  stages {
-
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
-
-    stage('Build') {
-      steps {
-        sh 'mvn clean verify'
-      }
-    }
-
-    stage('Sonar Scan') {
-      steps {
-        withSonarQubeEnv('jenkins-sonarqube') {
-          sh '''
-          mvn sonar:sonar \
-            -Dsonar.projectKey=demo \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_AUTH_TOKEN
-          '''
         }
-      }
     }
-  }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean verify'
+            }
+        }
+
+        stage('Sonar Scan') {
+            steps {
+                withSonarQubeEnv('jenkins-sonarqube') {
+                    sh '''
+                    mvn sonar:sonar \
+                      -Dsonar.projectKey=demo \
+                      -Dsonar.host.url=$SONAR_HOST_URL \
+                      -Dsonar.login=$SONAR_AUTH_TOKEN
+                    '''
+                }
+            }
+        }
+    }
 }
