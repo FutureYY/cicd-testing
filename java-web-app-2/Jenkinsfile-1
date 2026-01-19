@@ -13,6 +13,15 @@ spec:
     command:
     - cat
     tty: true
+    volumeMounts:
+    - mountPath: /home/jenkins/agent
+      name: workspace-volume
+    securityContext:
+      runAsUser: 1000
+    env:
+    - name: JAVA_TOOL_OPTIONS
+      value: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
+
 """
         }
     }
