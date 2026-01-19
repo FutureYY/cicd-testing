@@ -18,9 +18,10 @@ spec:
     }
 
     environment {
-        REGISTRY = "docker.io/hellopanda123yummy"      // e.g., docker.io/futureyy
-        IMAGE_NAME = "java-web-app"
-        NAMESPACE = "java-web-app"
+        REGISTRY = "harbor.lab.local"      // e.g., docker.io/futureyy
+        PROJECT = "java-web-app"
+        APP_NAME = "java-web-app"
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
@@ -69,15 +70,22 @@ spec:
         stage('Build Docker Image') {
             steps {
                 dir('java-web-app') {
-                    sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:latest ."
+                    sh "docker build -t ${REGISTRY}/${PROJECT}/${APP_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Image to Harbor') {
             steps {
-                dir('java-web-app') {
-                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:latest"
+                withCredentials([usernamePassword(
+                  credentialsId: 'harbor-creds',
+                  usernameVariable: 'H_USER',
+                  passwordVariable: 'H_PASS'
+              )]) {
+                  sh """
+                     echo $H_PASS | docker login ${REGISTRY} -u $H_USER --password-stdin
+                     docker push ${REGISTRY}/${PROJECT}/${APP_NAME}:${IMAGE_TAG}
+                  """
                 }
             }
         }
