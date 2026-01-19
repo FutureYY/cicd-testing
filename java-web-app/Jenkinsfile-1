@@ -3,6 +3,7 @@ pipeline {
         kubernetes {
             label 'maven-agent'
             defaultContainer 'maven'
+            inheritFrom 'base-maven-pod' // define a pod template in Jenkins
             yaml """
 apiVersion: v1
 kind: Pod
