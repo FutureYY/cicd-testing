@@ -1,9 +1,9 @@
 pipeline {
-    agent {
-        kubernetes {
-            label 'maven-agent'
-            defaultContainer 'maven'
-            yaml """
+  agent {
+    kubernetes {
+      label 'maven-agent'
+      defaultContainer 'maven'
+      yaml """
 apiVersion: v1
 kind: Pod
 spec:
@@ -18,63 +18,37 @@ spec:
         cpu: 100m
         memory: 256Mi
       limits:
-        cpu: 500m
+        cpu: 300m
         memory: 512Mi
-  - name: jnlp
-    image: jenkins/inbound-agent:latest
-    args: ['-url', 'http://jenkins-agent:50000', '\${computerName}']
-    resources:
-      requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
-        cpu: 250m
-        memory: 256Mi
 """
-        }
+    }
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Build') {
-            steps {
-                dir('java-web-app') {
-                    sh './mvnw clean verify'
-                }
-            }
-        }
-
-        stage('Install SonarScanner') {
-            steps {
-                sh '''
-                curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-                apt-get update && apt-get install -y unzip
-                unzip -q sonar-scanner.zip
-                mv sonar-scanner-* /opt/sonar-scanner
-                ln -sf /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
-                sonar-scanner --version
-                '''
-            }
-        }
-
-        stage('Sonar Scan') {
-            steps {
-                dir('java-web-app') {
-                    withSonarQubeEnv('jenkins-sonarqube') {
-                        sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=demo \
-                          -Dsonar.sources=src \
-                          -Dsonar.java.binaries=target
-                        '''
-                    }
-                }
-            }
-        }
+    stage('Build') {
+      steps {
+        sh 'mvn clean verify'
+      }
     }
+
+    stage('Sonar Scan') {
+      steps {
+        withSonarQubeEnv('jenkins-sonarqube') {
+          sh '''
+          mvn sonar:sonar \
+            -Dsonar.projectKey=demo \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_AUTH_TOKEN
+          '''
+        }
+      }
+    }
+  }
 }
