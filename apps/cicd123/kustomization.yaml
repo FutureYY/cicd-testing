@@ -1,13 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - deployment.yaml
+  - deployment-yytest.yaml
   - imgrepo.yaml
   - imgpolicy.yaml
   - img-automation.yaml
   - ingress.yaml
   - service.yaml
 images:
-  - name: harbor.lab.local/cicd123/cicd123
+  - name: harbor.lab.local/java-web-app/java-web-app
     newTag: 1.0.0
 

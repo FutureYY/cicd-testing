@@ -4,7 +4,7 @@ metadata:
   name: cicd123
   namespace: flux-system
 spec:
-  image: harbor.lab.local/cicd123/cicd123
+  image: harbor.lab.local/java-web-app/java-web-app
   interval: 1m
   provider: generic
   secretRef:
