@@ -1,18 +1,29 @@
-FROM adoptopenjdk/openjdk11:alpine-slim as build
+# =========================
+# Build stage
+# =========================
+FROM eclipse-temurin:17-alpine as build
 WORKDIR /workspace/app
 
+# Copy Maven wrapper and project files
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
 
-RUN ./mvnw install -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+# Build the fat jar (skip tests)
+RUN ./mvnw package -DskipTests
 
-FROM adoptopenjdk/openjdk11:alpine-slim
+# =========================
+# Runtime stage
+# =========================
+FROM eclipse-temurin:17-alpine
 VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-Dserver.port=${PORT}","-cp","app:app/lib/*","com.example.demo.DemoApplication"]
+
+# Set a default PORT so Spring Boot can bind
+ENV PORT=8080
+
+# Copy the fat jar from the build stage
+COPY --from=build /workspace/app/target/*.jar app.jar
+
+# Start the application
+ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-jar", "/app.jar"]

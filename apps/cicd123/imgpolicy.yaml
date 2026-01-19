@@ -9,3 +9,4 @@ spec:
   policy:
     semver:
       range: ">=0.0.0"
+  digestReflectionPolicy: Never

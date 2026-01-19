@@ -1,0 +1,258 @@
+[33mcommit d9b50b23f6373509c504cb4bd8d19fa88aa46e11[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 14 06:15:30 2026 +0000
+
+    Add production-ready pipeline and Kubernetes manifests
+
+[33mcommit 5b4e817b6070edf9e9b37421e410a9813201d0b0[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 14 02:12:34 2026 +0000
+
+    Remove duplicate DemoApplication class
+
+[33mcommit fa39a219080c6cbcf3ed5773a0f1d337dc866ba9[m
+Merge: 91292b8 13e06fe
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 14 01:59:38 2026 +0000
+
+    Merge branch 'main' of github.com:FutureYY/cicd-testing
+
+[33mcommit 91292b82998b1b59d8fe51fa672d849ce56dfc87[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 13 09:26:17 2026 +0000
+
+    test
+
+[33mcommit 13e06fe87f595cc61f632cee3cd7b2f6bce59d95[m
+Author: Flux <>
+Date:   Mon Jan 12 08:36:19 2026 +0000
+
+    Add Flux sync manifests
+
+[33mcommit 9841f59f2fd20a2a0e4531e7543411448de81448[m
+Author: Flux <>
+Date:   Mon Jan 12 08:36:15 2026 +0000
+
+    Add Flux v2.7.5 component manifests
+
+[33mcommit 5f94b931da89ce548e398db239237d83753b7f02[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 09:33:33 2026 +0000
+
+    its complicated
+
+[33mcommit 3e71ecb103b1e67d4df4316ecea723ac477add4a[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 09:27:49 2026 +0000
+
+    TYPO
+
+[33mcommit 349b77e09b5e21f2543c12badbe7e444f2475b3e[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 09:23:42 2026 +0000
+
+    Fix SonarScanner install using tar (no unzip)
+
+[33mcommit c1218d095f070a78132ba2a36ebd0ea7741c8836[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 09:19:08 2026 +0000
+
+    changing
+
+[33mcommit c0a07fe7b5f119d008fe3635eea132957e8135e7[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 09:15:46 2026 +0000
+
+    adding sonarrunner
+
+[33mcommit 7e7353612f3a0ea3e25bf36ed22edd989f24d956[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 09:13:47 2026 +0000
+
+    adding sonnarscanner into Jenkinsfile-1
+
+[33mcommit c1821fa503c44f1447221509545f67dde0174daf[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 09:09:48 2026 +0000
+
+    Deleting maven sonar plugin
+
+[33mcommit 1c0e7dd0afcd3015c672be7bb2f1da2501ef4fe8[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 08:49:25 2026 +0000
+
+    changing mvn
+
+[33mcommit 6b5f853a104783c987f093744323482490ca9892[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 08:26:43 2026 +0000
+
+    changing sonarplugon to lower version
+
+[33mcommit 312636a4cb706fcfb0b0dd1b8f823f947291be0f[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 08:16:07 2026 +0000
+
+    Replacing sonar plugin version
+
+[33mcommit 1b1d699c4c3980218d3ecb56ccb93fbddf8dfe6e[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 07:55:36 2026 +0000
+
+    Closing the tag in pom.xml
+
+[33mcommit d313a2828c491706a98a2b868d33ee9e64ee9217[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 07:50:45 2026 +0000
+
+    Closing the tag in pom.xml
+
+[33mcommit 89cf588cac1f8614e03f2a80305861979c34f368[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 07:15:16 2026 +0000
+
+    Editing to the correct location
+
+[33mcommit 6afb79dfd6adb37b3b678d59017da3181b13e4f4[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 07:10:32 2026 +0000
+
+    Replacing Maven Wrapper with Maven Docker in Jenkinsfile-1
+
+[33mcommit 3a6959b616477f518c5b612b304405f55ff94b4a[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 07:06:02 2026 +0000
+
+    Replacing Maven Wrapper with Maven Docker in Jenkinsfile-1
+
+[33mcommit de8e3d73f12272e89c98105f9f4812450d87f960[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 06:35:28 2026 +0000
+
+    Changing location
+
+[33mcommit c2ae30ef55cb07213d2b295969240f33fb5efb77[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 06:17:29 2026 +0000
+
+    CHanging maven version on maven-wrapper.properties
+
+[33mcommit 5a967782a5fcb9f44e3de3b7b389e48811006f5c[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 06:04:31 2026 +0000
+
+    CHanging maven version on maven-wrapper.properties
+
+[33mcommit 01b824ba668c5609402fcbb7cc03eb9ecae149bf[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Wed Jan 7 05:52:34 2026 +0000
+
+    updating Jenkinsfile-1 to check for java & maven version in pipeline
+
+[33mcommit a200fbbf483804c323497c18cabb8e5e4ee577f5[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 08:28:26 2026 +0000
+
+    editing pom.xml
+
+[33mcommit 7d17869f3839d903a23d9359fa4055e618cb99f2[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 08:19:54 2026 +0000
+
+    editing pom.xml
+
+[33mcommit f95aeda7f8a94c9352ad455cdddf425d20f5ab9b[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 07:07:37 2026 +0000
+
+    Add yaml files for image update automation
+
+[33mcommit 093111fc4f79ce51c9f9c3877d1cc0340a059156[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 06:27:15 2026 +0000
+
+    Downgrading the Sonar Maven plugin to a version compatible with SLF4J
+
+[33mcommit f3b10e21cab4f88207a9c1fe1a17132f08df7d9d[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 06:16:08 2026 +0000
+
+    Adding Kubernetes service for sonarkube in Jenkinsfile-2
+
+[33mcommit 365b37467fe0401aa29e2d06300650c4ed125fee[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 04:22:55 2026 +0000
+
+    javascript installed
+
+[33mcommit 8c97ccbd94c2acd4fc9b2b8ca672a1133ab2044b[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 03:34:47 2026 +0000
+
+    testing
+
+[33mcommit 325b4e73c7b633e91452f10690fc4e9307d14e9e[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 03:30:32 2026 +0000
+
+    t
+
+[33mcommit 2e3f097265695580ccd3440e00e275e3fdd7e446[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 03:25:46 2026 +0000
+
+    t
+
+[33mcommit 6323a9069b072e4843bdb417aa7cacc3e60612b0[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 02:57:04 2026 +0000
+
+    no
+
+[33mcommit 9b0fab2f235f22f53c0b8ee16ad4af05bf558f1b[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 02:54:12 2026 +0000
+
+    yes
+
+[33mcommit 16c4bfa3494ae09879c0c83dc0cdda4333795646[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 02:51:23 2026 +0000
+
+    yes
+
+[33mcommit 77f76f758dba24e37a17e3fd08ab628002109b89[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 02:47:34 2026 +0000
+
+    Remove java-web-app (wrong branch)
+
+[33mcommit 30db39e61352495cd155b29edf31258bd9292610[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 02:26:09 2026 +0000
+
+    test
+
+[33mcommit 856101861f597048174cac0309ecead0add671e1[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Tue Jan 6 01:43:24 2026 +0000
+
+    testing123
+
+[33mcommit a8be4470dc0afad3a2365aa920e37f99bd06939e[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Mon Jan 5 08:03:21 2026 +0000
+
+    Fix Kustomize root
+
+[33mcommit d894e9fbbb9cccda907c2a90145ff13eb201d774[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Mon Jan 5 07:48:07 2026 +0000
+
+    Fix Kustomize apiVersion (not Flux Kustomization)
+
+[33mcommit d58ca8098ca0f3032d60e7424fb2fc20f1381e28[m
+Author: FutureYY <wongyy703@gmail.com>
+Date:   Fri Jan 2 12:31:09 2026 +0000
+
+    Initial Flux GitOps structure
