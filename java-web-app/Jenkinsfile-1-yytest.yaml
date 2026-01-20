@@ -1,19 +1,22 @@
 pipeline {
+    options {
+      skipDefaultCheckout(true)
+    }
     agent {
         kubernetes {
             label 'maven-agent'
             defaultContainer 'maven'
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: maven
-    image: maven:3.9.6-eclipse-temurin-17
-    command:
-    - cat
-    tty: true
-"""
+            #yaml """
+#apiVersion: v1
+#kind: Pod
+#spec:
+  #containers:
+  #- name: maven
+    #image: maven:3.9.6-eclipse-temurin-17
+   # command:
+  #  - cat
+ #   tty: true
+#"""
         }
     }
 
@@ -22,22 +25,46 @@ spec:
         PROJECT = "java-web-app"
         APP_NAME = "java-web-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        NAMESPACE = "java-web-app"
     }
-
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
+      stage('Agent Test') {
+        steps {
+          sh '''
+            echo "Agent is working"
+            java -version
+            mvn -version
+          '''
         }
-
-        stage('Build') {
-            steps {
-                dir('java-web-app') {
-                    sh 'mvn clean verify'
-                }
-            }
+      stage('Checkout') {
+        steps {
+          container('maven') {
+            sh '''
+              apt-get update
+              apt-get install -y openssh-client ca-certificates
+              mkdir -p ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+            '''
+            checkout([
+              $class: 'GitSCM',
+              branches: [[name: '*/main']],
+              userRemoteConfigs: [[
+                url: 'https://github.com:FutureYY/cicd-testing.git',
+                credentialsId: 'github-https'
+              ]]
+            ])
+          }
         }
+      }
+      stage('Build') {
+        steps {
+          dir('java-web-app') {
+                    #sh './mvnw clean package -DskipTests'
+            sh 'mvn clean verify'
+          }
+        }
+      }
 
         stage('Install SonarScanner') {
             steps {
@@ -78,7 +105,7 @@ spec:
         stage('Push Image to Harbor') {
             steps {
                 withCredentials([usernamePassword(
-                  credentialsId: 'harbor-creds',
+                  credentialsId: 'harbor-credentials',
                   usernameVariable: 'H_USER',
                   passwordVariable: 'H_PASS'
               )]) {
