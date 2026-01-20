@@ -16,7 +16,10 @@ pipeline {
 
         stage('Build & Test') {
             steps {
-                sh './mvnw clean verify'
+                dir('java-web-app-2') {
+                    sh 'chmod +x mvnw'
+                    sh './mvnw clean verify'
+                }
             }
         }
 
