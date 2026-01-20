@@ -25,16 +25,20 @@ pipeline {
 
         stage('Sonar Scan') {
             steps {
-                withSonarQubeEnv('jenkins-sonarqube') {
-                    sh '''
-                      ./mvnw sonar:sonar \
-                        -Dsonar.projectKey=demo \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target
-                    '''
+                dir('java-web-app-2') {
+                    withSonarQubeEnv('jenkins-sonarqube') {
+                        sh '''
+                          chmod +x mvnw
+                          ./mvnw sonar:sonar \
+                            -Dsonar.projectKey=demo \
+                            -Dsonar.sources=src \
+                            -Dsonar.java.binaries=target
+                        '''
+                    }
                 }
             }
         }
+      
 
         stage('Docker Build & Push') {
             steps {
