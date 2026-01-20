@@ -29,6 +29,10 @@ pipeline {
       stage('Checkout') {
         steps {
           container('maven') {
+            sh '''
+                apt-get update && apt-get install -y ca-certificates git
+                update-ca-certificates
+            '''             
             checkout([
               $class: 'GitSCM',
               branches: [[name: '*/main']],
