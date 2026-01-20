@@ -25,6 +25,7 @@ pipeline {
             mvn -version
           '''
         }
+      }
       stage('Checkout') {
         steps {
           container('maven') {
@@ -39,7 +40,7 @@ pipeline {
               $class: 'GitSCM',
               branches: [[name: '*/main']],
               userRemoteConfigs: [[
-                url: 'https://github.com:FutureYY/cicd-testing.git',
+                url: 'https://github.com/FutureYY/cicd-testing.git',
                 credentialsId: 'github-https'
               ]]
             ])
@@ -121,4 +122,4 @@ pipeline {
             echo "❌ Build or deployment failed."
         }
     }
-
+  }
