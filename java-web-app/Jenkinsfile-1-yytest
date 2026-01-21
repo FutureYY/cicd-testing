@@ -1,7 +1,4 @@
 pipeline {
-    options {
-      skipDefaultCheckout(true)
-    }
     agent {
         kubernetes {
             label 'maven-agent'
@@ -24,24 +21,6 @@ pipeline {
             java -version
             mvn -version
           '''
-        }
-      }
-      stage('Checkout') {
-        steps {
-          container('maven') {
-            sh '''
-                apt-get update && apt-get install -y ca-certificates git
-                update-ca-certificates
-            '''             
-            checkout([
-              $class: 'GitSCM',
-              branches: [[name: '*/main']],
-              userRemoteConfigs: [[
-                url: 'https://github.com/FutureYY/cicd-testing.git',
-                credentialsId: 'github-https'
-              ]]
-            ])
-          }
         }
       }
       stage('Build') {
