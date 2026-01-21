@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "harbor.lab.local/library/java-web-app" // Change to your Harbor project
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        HARBOR_CREDENTIALS = "harbor-id" // Jenkins credential ID
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                sh './mvnw clean verify'
+            }
+        }
+
+        stage('Sonar Scan') {
+            steps {
+                withSonarQubeEnv('jenkins-sonarqube') {
+                    sh '''
+                      ./mvnw sonar:sonar \
+                        -Dsonar.projectKey=demo \
+                        -Dsonar.sources=src \
+                        -Dsonar.java.binaries=target
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${HARBOR_CREDENTIALS}", usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
+                    sh '''
+                        docker login harbor.lab.local -u $HARBOR_USER -p $HARBOR_PASS
+                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
+                }
+            }
+        }
+
+        stage('Wait for Harbor Scan') {
+            steps {
+                harbor waitForHarborWebHook(
+                    abortPipeline: true,
+                    credentialsId: "${HARBOR_CREDENTIALS}",
+                    server: "Harbor Server Name",
+                    severity: "Critical"
+                )
+            }
+        }
+    }
+}

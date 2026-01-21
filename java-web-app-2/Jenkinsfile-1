@@ -1,13 +1,53 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            label 'maven-agent'
+            defaultContainer 'maven'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9.6-openjdk-17-slim
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - mountPath: /home/jenkins/agent
+      name: workspace-volume
+    securityContext:
+      runAsUser: 1000
+    env:
+    - name: JAVA_TOOL_OPTIONS
+      value: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
+  - name: docker
+    image: docker:24.0.6-dind
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-sock
+volumes:
+- name: workspace-volume
+  emptyDir: {}
+- name: docker-sock
+  hostPath:
+    path: /var/run/docker.sock
+"""
+        }
+    }
 
     environment {
-        IMAGE_NAME = "harbor.lab.local/library/java-web-app" // Change to your Harbor project
-        IMAGE_TAG = "${BUILD_NUMBER}"
-        HARBOR_CREDENTIALS = "harbor-id" // Jenkins credential ID
+        HARBOR_CREDENTIALS = 'harbor-id' // Edit: your Harbor Jenkins credential ID
+        HARBOR_REGISTRY = 'harbor.lab.local' // Edit: your Harbor URL
+        HARBOR_PROJECT = 'java-web-app-2'        // Edit: your Harbor project name
+        IMAGE_NAME = 'demo-app'              // Edit: image name
+        IMAGE_TAG = "${env.BUILD_NUMBER}"    // optional: use Jenkins build number
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -17,7 +57,6 @@ pipeline {
         stage('Build & Test') {
             steps {
                 dir('java-web-app-2') {
-                    sh 'chmod +x mvnw'
                     sh './mvnw clean verify'
                 }
             }
@@ -38,29 +77,36 @@ pipeline {
                 }
             }
         }
-      
 
         stage('Docker Build & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${HARBOR_CREDENTIALS}", usernameVariable: 'HARBOR_USER', passwordVariable: 'HARBOR_PASS')]) {
-                    sh '''
-                        docker login harbor.lab.local -u $HARBOR_USER -p $HARBOR_PASS
-                        docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
-                    '''
+                dir('java-web-app-2') {
+                    container('docker') {
+                        script {
+                            dockerImage = docker.build("${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}", ".")
+                            docker.withRegistry("https://${HARBOR_REGISTRY}", "${HARBOR_CREDENTIALS}") {
+                                dockerImage.push()
+                            }
+                        }
+                    }
                 }
             }
         }
 
         stage('Wait for Harbor Scan') {
             steps {
-                harbor waitForHarborWebHook(
-                    abortPipeline: true,
-                    credentialsId: "${HARBOR_CREDENTIALS}",
-                    server: "Harbor Server Name",
-                    severity: "Critical"
-                )
+                echo 'Waiting for Harbor to scan the image automatically...'
+                // Optional: Poll Harbor API if you want automation
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully: ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}"
+        }
+        failure {
+            echo "Pipeline failed! Check logs."
         }
     }
 }

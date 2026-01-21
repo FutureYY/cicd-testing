@@ -1,0 +1,19 @@
+FROM maven:3.9.6-eclipse-temurin-17
+
+USER root
+
+# Install system CA certs
+RUN apt-get update \
+ && apt-get install -y ca-certificates git \
+ && update-ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+# Import CA certs into Java truststore (THIS FIXES PKIX)
+RUN keytool -importkeystore \
+    -srckeystore /etc/ssl/certs/java/cacerts \
+    -srcstorepass changeit \
+    -destkeystore $JAVA_HOME/lib/security/cacerts \
+    -deststorepass changeit \
+    -noprompt || true
+
+USER jenkins
