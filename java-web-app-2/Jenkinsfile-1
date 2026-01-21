@@ -1,112 +1,68 @@
 pipeline {
-    agent {
-        kubernetes {
-            label 'maven-agent'
-            defaultContainer 'maven'
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: maven
-    image: maven:3.9.6-openjdk-17-slim
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - mountPath: /home/jenkins/agent
-      name: workspace-volume
-    securityContext:
-      runAsUser: 1000
-    env:
-    - name: JAVA_TOOL_OPTIONS
-      value: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts"
-  - name: docker
-    image: docker:24.0.6-dind
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - mountPath: /var/run/docker.sock
-      name: docker-sock
-volumes:
-- name: workspace-volume
-  emptyDir: {}
-- name: docker-sock
-  hostPath:
-    path: /var/run/docker.sock
-"""
-        }
-    }
-
+    agent any   // Use the Jenkins master node or any node with Docker installed
     environment {
-        HARBOR_CREDENTIALS = 'harbor-id' // Edit: your Harbor Jenkins credential ID
-        HARBOR_REGISTRY = 'harbor.lab.local' // Edit: your Harbor URL
-        HARBOR_PROJECT = 'java-web-app-2'        // Edit: your Harbor project name
-        IMAGE_NAME = 'demo-app'              // Edit: image name
-        IMAGE_TAG = "${env.BUILD_NUMBER}"    // optional: use Jenkins build number
+        DOCKER_REGISTRY = "harbor.lab.local"        // Your Harbor URL
+        IMAGE_NAME = "java-web-app"
+        SONAR_PROJECT_KEY = "demo"
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                checkout scm
+                echo "Checking out code..."
+                git url: 'https://github.com/FutureYY/cicd-testing.git', branch: 'main'
             }
         }
 
         stage('Build & Test') {
             steps {
-                dir('java-web-app-2') {
-                    sh './mvnw clean verify'
-                }
+                echo "Running Maven build & tests..."
+                sh 'chmod +x mvnw'
+                sh './mvnw clean verify'
             }
         }
 
-        stage('Sonar Scan') {
+        stage('SonarQube Scan') {
             steps {
-                dir('java-web-app-2') {
-                    withSonarQubeEnv('jenkins-sonarqube') {
-                        sh '''
-                          chmod +x mvnw
-                          ./mvnw sonar:sonar \
-                            -Dsonar.projectKey=demo \
-                            -Dsonar.sources=src \
-                            -Dsonar.java.binaries=target
-                        '''
-                    }
+                echo "Running SonarQube scan..."
+                withSonarQubeEnv('jenkins-sonarqube') {
+                    sh './mvnw sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.sources=src -Dsonar.java.binaries=target'
                 }
             }
         }
 
         stage('Docker Build & Push') {
             steps {
-                dir('java-web-app-2') {
-                    container('docker') {
-                        script {
-                            dockerImage = docker.build("${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}", ".")
-                            docker.withRegistry("https://${HARBOR_REGISTRY}", "${HARBOR_CREDENTIALS}") {
-                                dockerImage.push()
-                            }
-                        }
-                    }
+                echo "Building and pushing Docker image to Harbor..."
+                script {
+                    def fullImageName = "${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                    sh "docker build -t ${fullImageName} ."
+                    sh "docker login ${DOCKER_REGISTRY} -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD}"
+                    sh "docker push ${fullImageName}"
                 }
             }
         }
 
-        stage('Wait for Harbor Scan') {
+        stage('Harbor Scan (optional)') {
             steps {
-                echo 'Waiting for Harbor to scan the image automatically...'
-                // Optional: Poll Harbor API if you want automation
+                echo "Triggering Harbor scan..."
+                // If you have Harbor API integration, you can call it here
+                // e.g., sh "curl -X POST https://harbor.lab.local/api/v2.0/projects/.../scan"
             }
         }
     }
 
     post {
+        always {
+            echo "Cleaning workspace..."
+            cleanWs()
+        }
         success {
-            echo "Pipeline completed successfully: ${HARBOR_REGISTRY}/${HARBOR_PROJECT}/${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "Pipeline completed successfully!"
         }
         failure {
-            echo "Pipeline failed! Check logs."
+            echo "Pipeline failed!"
         }
     }
 }
