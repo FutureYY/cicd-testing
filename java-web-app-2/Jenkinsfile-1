@@ -1,68 +1,77 @@
 pipeline {
-    agent any   // Use the Jenkins master node or any node with Docker installed
+    agent {
+        kubernetes {
+            label 'maven-agent'
+            defaultContainer 'jnlp'
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins/label: maven-agent
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9.6-eclipse-temurin-17
+    command:
+    - cat
+    tty: true
+  - name: jnlp
+    image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
+"""
+        }
+    }
+
     environment {
-        DOCKER_REGISTRY = "harbor.lab.local"        // Your Harbor URL
-        IMAGE_NAME = "java-web-app"
-        SONAR_PROJECT_KEY = "demo"
+        GIT_CREDENTIALS = 'FutureYY' // your GitHub credentials ID
+        SONAR_HOST_URL = 'http://sonarqube.svc.cluster.local:9000'
+        SONAR_LOGIN = credentials('jenkins-sonarqube') // replace with your Sonar token ID in Jenkins
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                echo "Checking out code..."
-                git url: 'https://github.com/FutureYY/cicd-testing.git', branch: 'main'
+                checkout([$class: 'GitSCM',
+                          branches: [[name: 'main']],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [],
+                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
+                                               credentialsId: "${GIT_CREDENTIALS}"]]])
             }
         }
 
-        stage('Build & Test') {
+        stage('Build') {
             steps {
-                echo "Running Maven build & tests..."
-                sh 'chmod +x mvnw'
-                sh './mvnw clean verify'
-            }
-        }
-
-        stage('SonarQube Scan') {
-            steps {
-                echo "Running SonarQube scan..."
-                withSonarQubeEnv('jenkins-sonarqube') {
-                    sh './mvnw sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.sources=src -Dsonar.java.binaries=target'
+                container('maven') {
+                    sh 'mvn clean package'
                 }
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Sonar Scan') {
             steps {
-                echo "Building and pushing Docker image to Harbor..."
-                script {
-                    def fullImageName = "${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
-                    sh "docker build -t ${fullImageName} ."
-                    sh "docker login ${DOCKER_REGISTRY} -u ${HARBOR_USERNAME} -p ${HARBOR_PASSWORD}"
-                    sh "docker push ${fullImageName}"
+                container('maven') {
+                    sh """
+                        mvn sonar:sonar \
+                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                        -Dsonar.login=${SONAR_LOGIN}
+                    """
                 }
             }
         }
 
-        stage('Harbor Scan (optional)') {
-            steps {
-                echo "Triggering Harbor scan..."
-                // If you have Harbor API integration, you can call it here
-                // e.g., sh "curl -X POST https://harbor.lab.local/api/v2.0/projects/.../scan"
-            }
-        }
     }
 
     post {
         always {
-            echo "Cleaning workspace..."
-            cleanWs()
+            echo 'Pipeline finished. Hee Hee let's eat bkt'
         }
         success {
-            echo "Pipeline completed successfully!"
+            echo 'Pipeline succeeded! Chagee'
         }
         failure {
-            echo "Pipeline failed!"
+            echo 'Pipeline failed! That sucks'
         }
     }
 }
