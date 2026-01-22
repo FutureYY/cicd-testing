@@ -65,7 +65,7 @@ spec:
 
     post {
         always {
-            echo 'Pipeline finished. Hee Hee let's eat bkt'
+            echo 'Pipeline finished. Hee Hee lets eat bkt'
         }
         success {
             echo 'Pipeline succeeded! Chagee'
