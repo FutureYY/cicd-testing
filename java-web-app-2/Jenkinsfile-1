@@ -44,11 +44,13 @@ spec:
         stage('Build') {
             steps {
                 container('maven') {
-                    sh 'mvn clean package'
+                    dir('java-web-app-2') {   // <-- change to your actual project folder
+                        sh 'mvn clean package'
+                    }
                 }
             }
-        }
 
+        }
         stage('Sonar Scan') {
             steps {
                 container('maven') {
