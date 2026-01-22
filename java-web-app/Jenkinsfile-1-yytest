@@ -1,7 +1,8 @@
 pipeline {
     agent {
         kubernetes {
-            label 'maven-agent'
+            label 'maven'
+            defaultContainer 'jnlp'
         }
     }
 
