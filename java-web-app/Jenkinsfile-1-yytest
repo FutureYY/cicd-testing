@@ -16,17 +16,21 @@ pipeline {
     stages {
       stage('Agent Test') {
         steps {
-          sh '''
-            echo "Agent is working"
-            java -version
-            mvn -version
-          '''
+          container('maven') {
+            sh '''
+              echo "Agent is working"
+              java -version
+              mvn -version
+            '''
+          }
         }
       }
       stage('Build') {
         steps {
-          dir('java-web-app') {
-            sh 'mvn clean verify'
+          container('maven'){
+            dir('java-web-app') {
+              sh 'mvn clean verify'
+            }
           }
         }
       }
