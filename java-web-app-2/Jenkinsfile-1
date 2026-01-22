@@ -16,16 +16,24 @@ spec:
     command:
     - cat
     tty: true
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
   - name: jnlp
     image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
 """
         }
     }
 
     environment {
-        GIT_CREDENTIALS = 'FutureYY' // your GitHub credentials ID
+        GIT_CREDENTIALS = 'FutureYY'           // GitHub credentials ID in Jenkins
         SONAR_HOST_URL = 'http://sonarqube.svc.cluster.local:9000'
-        SONAR_LOGIN = credentials('jenkins-sonarqube') // replace with your Sonar token ID in Jenkins
+        SONAR_LOGIN = credentials('jenkins-sonarqube')  // SonarQube token ID in Jenkins
     }
 
     stages {
@@ -44,21 +52,23 @@ spec:
         stage('Build') {
             steps {
                 container('maven') {
-                    dir('java-web-app-2') {   // <-- change to your actual project folder
+                    dir('java-web-app-2') {
                         sh 'mvn clean package'
                     }
                 }
             }
-
         }
+
         stage('Sonar Scan') {
             steps {
                 container('maven') {
-                    sh """
-                        mvn sonar:sonar \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_LOGIN}
-                    """
+                    dir('java-web-app-2') {
+                        sh """
+                            mvn sonar:sonar \
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_LOGIN}
+                        """
+                    }
                 }
             }
         }
@@ -67,13 +77,13 @@ spec:
 
     post {
         always {
-            echo 'Pipeline finished. Hee Hee lets eat bkt'
+            echo "Pipeline finished. Hee Hee let's eat bkt"   // safely quoted with double quotes
         }
         success {
-            echo 'Pipeline succeeded! Chagee'
+            echo "Pipeline succeeded! Chagee"
         }
         failure {
-            echo 'Pipeline failed! That sucks'
+            echo "Pipeline failed! That sucks"
         }
     }
 }
