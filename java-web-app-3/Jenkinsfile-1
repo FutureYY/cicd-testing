@@ -46,8 +46,8 @@ spec:
         GIT_CREDENTIALS = 'FutureYY'             // <-- replace with your Jenkins Git credentials ID
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000' // <-- your SonarQube URL
         SONAR_LOGIN = credentials('jenkins-sonarqube')  // <-- your Jenkins SonarQube token ID
-        HARBOR_USER = credentials('admin')   // <-- your Harbor username credential ID
-        HARBOR_PASS = credentials('hellopanda123')   // <-- your Harbor password/token credential ID
+        HARBOR_USER = credentials('jenkins-harbor')   // <-- your Harbor username credential ID
+        HARBOR_PASS = credentials('')   // <-- your Harbor password/token credential ID
         IMAGE_NAME = 'harbor.lab.local/final/java-web-app-3:latest' // <-- your Harbor registry URL + image name
     }
 
