@@ -32,7 +32,7 @@ spec:
 
     environment {
         GIT_CREDENTIALS = 'FutureYY'           // GitHub credentials ID in Jenkins
-        SONAR_HOST_URL = 'http://sonarqube.sonarqube.svc.cluster.local:9000'
+        SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
         SONAR_LOGIN = credentials('jenkins-sonarqube')  // SonarQube token ID in Jenkins
     }
 
