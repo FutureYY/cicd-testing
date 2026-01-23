@@ -21,7 +21,7 @@ pipeline {
             - name: docker
               image: docker:26-dind
               securityContext: 
-                priviledged: true
+                privileged: true
               command: ['/bin/sh', '-c', 'while true; do sleep 30; done;']
               tty: true
               env:
