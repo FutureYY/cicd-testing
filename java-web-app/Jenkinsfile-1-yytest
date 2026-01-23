@@ -13,11 +13,6 @@ pipeline {
               image: maven:3.9.9-eclipse-temurin-17
               command: ['cat']
               tty: true
-
-            - name: sonar
-              image: sonarsource/sonar-scanner-cli:5
-              command: ['cat']
-              tty: true
             - name: docker
               image: docker:26-cli
               command: ['cat']
@@ -71,14 +66,12 @@ pipeline {
 
         stage('Sonar Scan') {
             steps {
-                container('sonar') {
+                container('maven') {
                   dir('java-web-app') {
                     withSonarQubeEnv('jenkins-sonarqube') {
                         sh '''
-                          sonar-scanner \
-                            -Dsonar.projectKey=demo \
-                            -Dsonar.sources=src \
-                            -Dsonar.java.binaries=target
+                          mvn sonar:sonar \
+                            -Dsonar.projectKey=demo
                         '''
                     }
                  }
