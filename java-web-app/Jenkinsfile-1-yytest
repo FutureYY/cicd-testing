@@ -19,7 +19,7 @@ pipeline {
                 mountPath: /home/jenkins/agent              
 
             - name: docker
-              image: docker:26-cli
+              image: docker:26-dind
               command: ['cat']
               tty: true
               env:
