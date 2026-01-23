@@ -24,7 +24,7 @@ pipeline {
               tty: true
               env:
               - name: DOCKER_HOST
-              value: tcp://localhost:2375
+                value: tcp://localhost:2375
 
             - name: dind
               image: docker:26-dind
@@ -33,6 +33,9 @@ pipeline {
               env:
               - name: DOCKER_TLS_CERTDIR
                 value: ""
+              volumeMounts:
+              - name: docker-graph
+                mountPath: /var/lib/docker
            """
         }
     }
@@ -87,7 +90,7 @@ pipeline {
               container('docker') {
                 dir('java-web-app') {
                     sh '''
-                      docekr version
+                      docker version
                       docker build -t ${REGISTRY}/${PROJECT}/${APP_NAME}:${IMAGE_TAG} .
                     '''
                 }
