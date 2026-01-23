@@ -11,7 +11,7 @@ pipeline {
             containers:
             - name: maven
               image: maven:3.9.9-eclipse-temurin-17
-              command: ['cat']
+              command: ['/bin/sh', '-c', 'while true; do sleep 30; done;']
               tty: true
               workingDir: /home/jenkins/agent
               volumeMounts: 
@@ -20,27 +20,20 @@ pipeline {
 
             - name: docker
               image: docker:26-dind
-              command: ['cat']
+              securityContext: 
+                priviledged: true
+              command: ['/bin/sh', '-c', 'while true; do sleep 30; done;']
               tty: true
               env:
               - name: DOCKER_HOST
                 value: tcp://localhost:2375
-              volumeMounts:
-              - mountPath: /home/jenkins/agent
-                name: workspace-volume
-
-            - name: dind
-              image: docker:26-dind
-              securityContext:
-                privileged: true
-              env:
               - name: DOCKER_TLS_CERTDIR
                 value: ""
               volumeMounts:
-              - mountPath: /var/lib/docker
-                name: docker-graph
               - mountPath: /home/jenkins/agent
                 name: workspace-volume
+              - mountPath: /var/lib/docker
+                name: docker-graph
 
             volumes:
             - name: workspace-volume
@@ -62,11 +55,11 @@ pipeline {
     stages {
       stage('Agent Test') {
         steps {
-          container('maven') {
+          container('docker') {
             sh '''
               echo "Agent is working"
-              java -version
-              mvn -version
+              docker -version
+              docker info
             '''
           }
         }
