@@ -1,8 +1,24 @@
 pipeline {
     agent {
         kubernetes {
-            label 'maven'
-            defaultContainer 'jnlp'
+            label 'maven'            
+         // defaultContainer 'jnlp'
+            defaultContainer 'maven'
+            yaml """
+          apiVersion: v1
+          kind: Pod
+          spec:
+            containers:
+            - name: maven
+              image: maven:3.9.9-eclipse-temurin-17
+              command: ['cat']
+              tty: true
+
+            - name: sonar
+              image: sonarsource/sonar-scanner-cli:5
+              command: ['cat']
+              tty: true
+           """
         }
     }
 
