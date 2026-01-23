@@ -20,6 +20,9 @@ pipeline {
               env:
               - name: DOCKER_HOST
                 value: tcp://localhost:2375
+              volumeMounts:
+              - mountPath: /home/jenkins/agent
+                name: volume-0
 
             - name: dind
               image: docker:26-dind
@@ -29,8 +32,10 @@ pipeline {
               - name: DOCKER_TLS_CERTDIR
                 value: ""
               volumeMounts:
-              - name: docker-graph
-                mountPath: /var/lib/docker
+              - mounthPath: /var/lib/docker
+                name: docker-graph
+              - mountPath: /home/jenkins/agent
+                name: volume-0
               volumes:
               - name: docker-graph
                 emptyDir: {}
