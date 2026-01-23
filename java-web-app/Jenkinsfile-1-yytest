@@ -42,12 +42,12 @@ pipeline {
               - mountPath: /home/jenkins/agent
                 name: workspace-volume
 
-             volumes:
-             - name: workspace-volume
-               emptyDir: {}
+            volumes:
+            - name: workspace-volume
+              emptyDir: {}
 
-             - name: docker-graph
-               emptyDir: {}
+            - name: docker-graph
+              emptyDir: {}
            """
         }
     }
