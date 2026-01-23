@@ -77,13 +77,13 @@ spec:
 
     post {
         always {
-            echo "Pipeline finished. Hee Hee let's eat bkt"   // safely quoted with double quotes
+            echo 'Pipeline finished.'   // safely quoted with double quotes
         }
         success {
-            echo "Pipeline succeeded! Chagee"
+            echo 'Pipeline succeeded!'
         }
         failure {
-            echo "Pipeline failed! That sucks"
+            echo 'Pipeline failed!'
         }
     }
 }
