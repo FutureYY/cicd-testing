@@ -13,6 +13,11 @@ pipeline {
               image: maven:3.9.9-eclipse-temurin-17
               command: ['cat']
               tty: true
+              workingDir: /home/jenkins/agent
+              volumeMounts: 
+              - name: workspace-volume
+                mountPath: /home/jenkins/agent              
+
             - name: docker
               image: docker:26-cli
               command: ['cat']
@@ -22,7 +27,7 @@ pipeline {
                 value: tcp://localhost:2375
               volumeMounts:
               - mountPath: /home/jenkins/agent
-                name: volume-0
+                name: workspace-volume
 
             - name: dind
               image: docker:26-dind
@@ -32,14 +37,17 @@ pipeline {
               - name: DOCKER_TLS_CERTDIR
                 value: ""
               volumeMounts:
-              - mounthPath: /var/lib/docker
+              - mountPath: /var/lib/docker
                 name: docker-graph
               - mountPath: /home/jenkins/agent
-                name: volume-0
-              volumes:
-              - name: docker-graph
-                emptyDir: {}
+                name: workspace-volume
 
+             volumes:
+             - name: workspace-volume
+               emptyDir: {}
+
+             - name: docker-graph
+               emptyDir: {}
            """
         }
     }
