@@ -31,6 +31,10 @@ pipeline {
               volumeMounts:
               - name: docker-graph
                 mountPath: /var/lib/docker
+              volumes:
+              - name: docker-graph
+                emptyDir: {}
+
            """
         }
     }
