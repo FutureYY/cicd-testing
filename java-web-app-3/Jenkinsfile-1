@@ -21,13 +21,13 @@ spec:
         cpu: "50m"
         memory: "128Mi"
   - name: docker
-    image: docker:24.0.6-cli   # <-- edit if you want a different Docker CLI image
+    image: docker:24.0.6-cli  # Docker CLI for building/pushing images
     command:
     - cat
     tty: true
     volumeMounts:
     - name: docker-socket
-      mountPath: /var/run/docker.sock  # required to build/push images
+      mountPath: /var/run/docker.sock
   - name: jnlp
     image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
     resources:
@@ -43,12 +43,11 @@ spec:
     }
 
     environment {
-        GIT_CREDENTIALS = 'FutureYY'             // <-- replace with your Jenkins Git credentials ID
-        SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000' // <-- your SonarQube URL
-        SONAR_LOGIN = credentials('jenkins-sonarqube')  // <-- your Jenkins SonarQube token ID
-        HARBOR_USER = credentials('jenkins-harbor')   // <-- your Harbor username credential ID
-        HARBOR_PASS = credentials('')   // <-- your Harbor password/token credential ID
-        IMAGE_NAME = 'harbor.lab.local/final/java-web-app-3:latest' // <-- your Harbor registry URL + image name
+        GIT_CREDENTIALS = 'FutureYY'  // Jenkins Git credential ID
+        SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
+        SONAR_LOGIN = credentials('jenkins-sonarqube')  // Jenkins SonarQube token ID
+        HARBOR_CREDENTIALS = credentials('jenkins-harbor') // Jenkins Harbor credential ID
+        IMAGE_NAME = 'harbor.lab.local/final/java-web-app-3:latest' // Harbor image name
     }
 
     stages {
@@ -59,7 +58,7 @@ spec:
                           branches: [[name: 'main']],
                           doGenerateSubmoduleConfigurations: false,
                           extensions: [],
-                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',  // <-- replace with your repo URL
+                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
                                                credentialsId: "${GIT_CREDENTIALS}"]]])
             }
         }
@@ -67,7 +66,7 @@ spec:
         stage('Build with Maven') {
             steps {
                 container('maven') {
-                    dir('java-web-app-3') {  // <-- updated to java-web-app-3
+                    dir('java-web-app-3') {
                         sh 'mvn clean package -DskipTests'
                     }
                 }
@@ -77,7 +76,7 @@ spec:
         stage('SonarQube Analysis') {
             steps {
                 container('maven') {
-                    dir('java-web-app-3') {  // <-- updated to java-web-app-3
+                    dir('java-web-app-3') {
                         sh """
                             mvn sonar:sonar \
                             -Dsonar.host.url=${SONAR_HOST_URL} \
@@ -91,10 +90,10 @@ spec:
         stage('Build & Push Docker Image') {
             steps {
                 container('docker') {
-                    dir('java-web-app-3') {  // <-- updated to java-web-app-3
+                    dir('java-web-app-3') {
                         sh """
                             echo "Logging into Harbor..."
-                            docker login -u ${HARBOR_USER} -p ${HARBOR_PASS} harbor.lab.local  # <-- replace harbor.company.com with your Harbor hostname
+                            docker login -u $HARBOR_CREDENTIALS_USR -p $HARBOR_CREDENTIALS_PSW harbor.lab.local
 
                             echo "Building Docker image..."
                             docker build -t ${IMAGE_NAME} .
@@ -106,6 +105,7 @@ spec:
                 }
             }
         }
+
     }
 
     post {
