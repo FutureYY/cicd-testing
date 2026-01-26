@@ -3,6 +3,7 @@ pipeline {
         kubernetes {            
          // defaultContainer 'jnlp'
             defaultContainer 'maven'
+            inheritFrom ''
             yaml """
           apiVersion: v1
           kind: Pod
