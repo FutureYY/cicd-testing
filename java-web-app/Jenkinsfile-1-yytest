@@ -19,7 +19,7 @@ pipeline {
                 mountPath: /home/jenkins/agent              
 
             - name: docker
-              image: docker:26-dind
+              image: docker:26
               securityContext: 
                 privileged: true
               command: ['/bin/sh', '-c', 'while true; do sleep 30; done;']
