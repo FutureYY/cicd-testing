@@ -78,7 +78,7 @@ spec:
                 container('maven') {
                     dir('java-web-app-3') {
                         sh """
-                            mvn sonar:sonar \
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                             -Dsonar.host.url=${SONAR_HOST_URL} \
                             -Dsonar.login=${SONAR_LOGIN}
                         """
