@@ -1,0 +1,145 @@
+pipeline {
+    agent {
+        kubernetes {
+            label 'maven-docker-agent'
+            defaultContainer 'jnlp'
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins/label: maven-docker-agent
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9.6-eclipse-temurin-17
+    command:
+    - cat
+    tty: true
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+  - name: docker
+    image: docker:24.0.6-cli  # Docker CLI for building/pushing images
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
+  - name: jnlp
+    image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+  volumes:
+  - name: docker-socket
+    hostPath:
+      path: /var/run/docker.sock
+"""
+        }
+    }
+
+    environment {
+        GIT_CREDENTIALS = 'FutureYY'  // Jenkins Git credential ID
+        SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
+        SONAR_LOGIN = credentials('jenkins-sonarqube')  // Jenkins SonarQube token ID
+        HARBOR_CREDENTIALS = credentials('jenkins-harbor') // Jenkins Harbor credential ID
+        IMAGE_TAG = "${BUILD_NUMBER}" // Jenkins build number for unique version
+        IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}" // Versioned Docker image
+    }
+
+    stages {
+
+        stage('Checkout SCM') {
+            steps {
+                checkout([$class: 'GitSCM',
+                          branches: [[name: 'main']],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [],
+                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
+                                               credentialsId: "${GIT_CREDENTIALS}"]]])
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                container('maven') {
+                    dir('java-web-app-3') {
+                        sh 'mvn clean package -DskipTests'
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                container('maven') {
+                    dir('java-web-app-3') {
+                        sh '''
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_LOGIN}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Build & Push Docker Image') {
+            steps {
+                container('docker') {
+                    dir('java-web-app-3') {
+                        sh """
+                            echo "Logging into Harbor..."
+                            docker login -u $HARBOR_CREDENTIALS_USR -p $HARBOR_CREDENTIALS_PSW harbor.lab.local
+
+                            echo "Building Docker image..."
+                            docker build -t ${IMAGE_NAME} .
+
+                            echo "Pushing Docker image to Harbor..."
+                            docker push ${IMAGE_NAME}
+                        """
+                    }
+                }
+            }
+        }
+
+        // ---------------- FluxCD GitOps Stage ----------------
+        stage('Update GitOps Repo for FluxCD') {
+            steps {
+                container('maven') { // any container with git installed
+                    dir('cicd-testing') { // repo root
+                        sh '''
+                            git config user.email "jenkins@ci.local"
+                            git config user.name "jenkins"
+
+                            # Update image tag in deployment.yaml
+                            sed -i "s|image: .*java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|" \
+                                k8s/java-web-app-3/deployment.yaml
+
+                            git add k8s/java-web-app-3/deployment.yaml
+                            git commit -m "Update java-web-app-3 image to ${IMAGE_TAG}" || echo "No changes to commit"
+                            git push origin main
+                        '''
+                    }
+                }
+            }
+        }
+
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
