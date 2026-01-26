@@ -1,7 +1,6 @@
 pipeline {
     agent {
-        kubernetes {
-            label 'maven'            
+        kubernetes {            
          // defaultContainer 'jnlp'
             defaultContainer 'maven'
             yaml """
@@ -14,9 +13,9 @@ pipeline {
               // command: ['/bin/sh', '-c', 'while true; do sleep 30; done;']
               tty: true
               // workingDir: /home/jenkins/agent
-              // volumeMounts: 
-              // - name: workspace-volume
-                // mountPath: /home/jenkins/agent              
+              volumeMounts: 
+              - name: workspace-volume
+                mountPath: /home/jenkins/agent              
 
             - name: docker
               image: docker:26-cli
@@ -25,15 +24,16 @@ pipeline {
               // command: ['/bin/sh', '-c', 'while true; do sleep 30; done;']
               tty: true
               env:
-              // - name: DOCKER_HOST
-                // value: tcp://localhost:2375
+              - name: DOCKER_HOST
+                value: tcp://dind:2375
               - name: DOCKER_TLS_CERTDIR
                 value: ""
               volumeMounts:
-              // - mountPath: /home/jenkins/agent
-                //name: workspace-volume
+              - mountPath: /home/jenkins/agent
+                name: workspace-volume
               - mountPath: /var/lib/docker
                 name: docker-graph
+              workingDir: /home/jenkins/agent
 
             - name: dind
               image: docker:26-dind
@@ -49,8 +49,8 @@ pipeline {
                 // mountPath: /home/jenkins/agent
 
             volumes:
-            // - name: workspace-volume
-              // emptyDir: {}
+            - name: workspace-volume
+              emptyDir: {}
 
             - name: docker-graph
               emptyDir: {}
