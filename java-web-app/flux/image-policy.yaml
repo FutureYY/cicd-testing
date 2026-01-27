@@ -7,6 +7,6 @@ spec:
   imageRepositoryRef:
     name: cicd123
   policy:
-    numerical:
-      order: asc
+    semver:
+      range: ">=1.0.0"
   digestReflectionPolicy: Never
