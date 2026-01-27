@@ -57,7 +57,7 @@ spec:
                 checkout([$class: 'GitSCM',
                           branches: [[name: 'main']],
                           doGenerateSubmoduleConfigurations: false,
-                          extensions: [],
+                          extensions: [[$class: 'LocalBranch', localBranch: 'main']],
                           userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
                                                credentialsId: "${GIT_CREDENTIALS}"]]])
             }
