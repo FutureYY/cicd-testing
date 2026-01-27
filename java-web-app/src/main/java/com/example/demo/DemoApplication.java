@@ -15,6 +15,6 @@ public class DemoApplication {
 
 	@RequestMapping("/")
   public String home() {
-    return "Hello Flux!";
+    return "Hello Flux! How are you?";
   }
 }

@@ -57,7 +57,7 @@ spec:
                 checkout([$class: 'GitSCM',
                           branches: [[name: 'main']],
                           doGenerateSubmoduleConfigurations: false,
-                          extensions: [[$class: 'LocalBranch', localBranch: 'main']],
+                          extensions: [],
                           userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
                                                credentialsId: "${GIT_CREDENTIALS}"]]])
             }
@@ -106,26 +106,7 @@ spec:
             }      
 
         }
-       
-         stage('Update Deployment YAML in Git') {
-            steps {
-                dir('java-web-app/flux') {
-                    sh """
-                        # Replace old image tag with new tag
-                        sed -i 's|harbor.lab.local/final/java-web-app-3:.*|${IMAGE_NAME}|' deployment-yytest.yaml
-
-                        # Configure Git
-                        git config user.name "jenkins"
-                        git config user.email "jenkins@ci.local"
-
-                        # Commit and push the update
-                        git add deployment-yytest.yaml
-                        git commit -m "ci: update java-web-app image to ${IMAGE_NAME}" || echo "No changes to commit"
-                        git push origin main
-                    """
-                }
-            }
-        }     
+            
     }
 
     post {
