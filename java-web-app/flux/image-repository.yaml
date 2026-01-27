@@ -1,0 +1,13 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: cicd123
+  namespace: flux-system
+spec:
+  image: harbor.lab.local/final/java-web-app-3
+  interval: 1m
+  provider: generic
+  secretRef:
+    name: harbor-credentials
+  certSecretRef:
+    name: harbor-ca

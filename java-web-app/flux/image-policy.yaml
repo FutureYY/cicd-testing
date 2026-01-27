@@ -1,0 +1,12 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: cicd123
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: cicd123
+  policy:
+    semver:
+      range: ">=0.0.0"
+  digestReflectionPolicy: Never
