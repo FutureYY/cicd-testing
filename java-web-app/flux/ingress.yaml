@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: cicd123.lab.local
+    - host: java-web-app.lab.local
       http:
         paths:
           - path: /
