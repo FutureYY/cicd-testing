@@ -18,6 +18,9 @@ spec:
         image: harbor.lab.local/final/java-web-app-3:1.0.0 # {"$imagepolicy": "flux-system:cicd123"}
         ports:
         - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
         readinessProbe:
           httpGet:
             path: /
