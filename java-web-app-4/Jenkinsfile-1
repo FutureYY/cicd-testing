@@ -13,27 +13,17 @@ spec:
   containers:
   - name: maven
     image: maven:3.9.6-eclipse-temurin-17
-    command:
-    - cat
+    command: ["cat"]
     tty: true
-    resources:
-      requests:
-        cpu: "50m"
-        memory: "128Mi"
   - name: docker
     image: docker:24.0.6-cli
-    command:
-    - cat
+    command: ["cat"]
     tty: true
     volumeMounts:
     - name: docker-socket
       mountPath: /var/run/docker.sock
   - name: jnlp
     image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
-    resources:
-      requests:
-        cpu: "100m"
-        memory: "256Mi"
   volumes:
   - name: docker-socket
     hostPath:
@@ -43,34 +33,33 @@ spec:
     }
 
     environment {
-        GIT_CREDENTIALS = 'FutureYY'               // Jenkins Git credential ID
+        GIT_CREDENTIALS = 'FutureYY'
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
         SONAR_LOGIN = credentials('jenkins-sonarqube')
+
         HARBOR_CREDENTIALS = credentials('jenkins-harbor')
         IMAGE_TAG = "${BUILD_NUMBER}"
+
+        // IMPORTANT: image name stays java-web-app-3
         IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}"
+
         FLUX_GIT_REPO = 'https://github.com/FutureYY/cicd-testing.git'
         FLUX_GIT_BRANCH = 'main'
-        FLUX_K8S_PATH = 'kustomization.yaml'
+        FLUX_K8S_FILE = 'kustomization.yaml'
     }
 
     stages {
 
         stage('Checkout SCM') {
             steps {
-                checkout([$class: 'GitSCM',
-                          branches: [[name: 'main']],
-                          doGenerateSubmoduleConfigurations: false,
-                          extensions: [],
-                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
-                                               credentialsId: "${GIT_CREDENTIALS}"]]])
+                checkout scm
             }
         }
 
         stage('Build with Maven') {
             steps {
                 container('maven') {
-                    dir('java-web-app-3') {
+                    dir('java-web-app-4') {
                         sh 'mvn clean package -DskipTests'
                     }
                 }
@@ -80,11 +69,11 @@ spec:
         stage('SonarQube Analysis') {
             steps {
                 container('maven') {
-                    dir('java-web-app-3') {
+                    dir('java-web-app-4') {
                         sh """
-                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.login=${SONAR_LOGIN}
+                        mvn sonar:sonar \
+                          -Dsonar.host.url=${SONAR_HOST_URL} \
+                          -Dsonar.login=${SONAR_LOGIN}
                         """
                     }
                 }
@@ -94,16 +83,14 @@ spec:
         stage('Build & Push Docker Image') {
             steps {
                 container('docker') {
-                    dir('java-web-app-3') {
+                    dir('java-web-app-4') {
                         sh """
-                            echo "Logging into Harbor..."
-                            docker login -u $HARBOR_CREDENTIALS_USR -p $HARBOR_CREDENTIALS_PSW harbor.lab.local
+                        docker login harbor.lab.local \
+                          -u ${HARBOR_CREDENTIALS_USR} \
+                          -p ${HARBOR_CREDENTIALS_PSW}
 
-                            echo "Building Docker image..."
-                            docker build -t ${IMAGE_NAME} .
-
-                            echo "Pushing Docker image to Harbor..."
-                            docker push ${IMAGE_NAME}
+                        docker build -t ${IMAGE_NAME} .
+                        docker push ${IMAGE_NAME}
                         """
                     }
                 }
@@ -114,23 +101,26 @@ spec:
             steps {
                 container('jnlp') {
                     sh """
-                        echo "Cloning Flux GitOps repo..."
-                        git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
-                        cd flux-repo
+                    rm -rf flux-repo
+                    git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
+                    cd flux-repo
 
-                        echo "Updating image tag in kustomization.yaml..."
-                        sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_PATH}
+                    sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_FILE}
 
-                        git config user.email "jenkins@ci.local"
-                        git config user.name "Jenkins CI"
-                        git add ${FLUX_K8S_PATH}
-                        git commit -m "Update java-web-app image to ${IMAGE_TAG}"
-                        git push
+                    git config user.email "jenkins@ci.local"
+                    git config user.name "Jenkins CI"
+
+                    if git diff --quiet; then
+                      echo "No Flux changes detected. Skipping commit."
+                    else
+                      git add ${FLUX_K8S_FILE}
+                      git commit -m "Update java-web-app image to ${IMAGE_TAG}"
+                      git push
+                    fi
                     """
                 }
             }
         }
-
     }
 
     post {
