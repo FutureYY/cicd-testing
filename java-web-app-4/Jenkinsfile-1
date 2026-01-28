@@ -21,7 +21,7 @@ spec:
         cpu: "50m"
         memory: "128Mi"
   - name: docker
-    image: docker:24.0.6-cli  # Docker CLI for building/pushing images
+    image: docker:24.0.6-cli
     command:
     - cat
     tty: true
@@ -43,12 +43,15 @@ spec:
     }
 
     environment {
-        GIT_CREDENTIALS = 'FutureYY'  // Jenkins Git credential ID
+        GIT_CREDENTIALS = 'FutureYY'               // Jenkins Git credential ID
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
-        SONAR_LOGIN = credentials('jenkins-sonarqube')  // Jenkins SonarQube token ID
-        HARBOR_CREDENTIALS = credentials('jenkins-harbor') // Jenkins Harbor credential ID
-        IMAGE_TAG = "${BUILD_NUMBER}" // Jenkins build number for unique version
-        IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}" // Versioned Docker image
+        SONAR_LOGIN = credentials('jenkins-sonarqube')
+        HARBOR_CREDENTIALS = credentials('jenkins-harbor')
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}"
+        FLUX_GIT_REPO = 'https://github.com/your-org/flux-gitops-repo.git'
+        FLUX_GIT_BRANCH = 'main'
+        FLUX_K8S_PATH = 'k8s/java-web-app/kustomization.yaml'
     }
 
     stages {
@@ -78,11 +81,11 @@ spec:
             steps {
                 container('maven') {
                     dir('java-web-app-3') {
-                        sh '''
+                        sh """
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
                             -Dsonar.host.url=${SONAR_HOST_URL} \
                             -Dsonar.login=${SONAR_LOGIN}
-                        '''
+                        """
                     }
                 }
             }
@@ -107,24 +110,23 @@ spec:
             }
         }
 
-        // ---------------- FluxCD GitOps Stage ----------------
-        stage('Update GitOps Repo for FluxCD') {
+        stage('Update Flux GitOps') {
             steps {
-                container('maven') { // any container with git installed
-                    dir('cicd-testing') { // repo root
-                        sh '''
-                            git config user.email "jenkins@ci.local"
-                            git config user.name "jenkins"
+                container('jnlp') {
+                    sh """
+                        echo "Cloning Flux GitOps repo..."
+                        git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
+                        cd flux-repo
 
-                            # Update image tag in deployment.yaml
-                            sed -i "s|image: .*java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|" \
-                                k8s/java-web-app-3/deployment.yaml
+                        echo "Updating image tag in kustomization.yaml..."
+                        sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_PATH}
 
-                            git add k8s/java-web-app-3/deployment.yaml
-                            git commit -m "Update java-web-app-3 image to ${IMAGE_TAG}" || echo "No changes to commit"
-                            git push origin main
-                        '''
-                    }
+                        git config user.email "jenkins@ci.local"
+                        git config user.name "Jenkins CI"
+                        git add ${FLUX_K8S_PATH}
+                        git commit -m "Update java-web-app image to ${IMAGE_TAG}"
+                        git push
+                    """
                 }
             }
         }
