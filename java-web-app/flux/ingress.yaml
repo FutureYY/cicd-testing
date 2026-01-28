@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: cicd123
-  namespace: default
+  name: java-web-app
+  namespace: java-web-app
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -15,6 +15,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: cicd123
+                name: java-web-app
                 port:
                   number: 80
