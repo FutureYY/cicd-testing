@@ -39,16 +39,17 @@ spec:
     }
 
     environment {
-        GIT_SSH_CREDENTIALS = 'github-ssh'          // SSH key for Flux push
-        GIT_HTTPS_CREDENTIALS = 'github-https'     // Token for SCM checkout
+        GIT_PRIVATE_KEY = credentials('github-ssh')    // your SSH private key stored in Jenkins
+        GIT_HTTPS_CREDENTIALS = 'github-https'        // for main repo checkout
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
         SONAR_LOGIN = credentials('jenkins-sonarqube')
         HARBOR_CREDENTIALS = credentials('jenkins-harbor')
-        IMAGE_TAG = "${BUILD_NUMBER}"               // unique tag per build
+        IMAGE_TAG = "${BUILD_NUMBER}"                 // unique tag per build
         IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}"
         FLUX_GIT_REPO = 'git@github.com:FutureYY/cicd-testing.git' // SSH
         FLUX_GIT_BRANCH = 'main'
         FLUX_K8S_FILE = 'flux-testing/kustomization.yaml'
+        SSH_WRAPPER = "${WORKSPACE}/git_ssh_wrapper.sh"
     }
 
     stages {
@@ -106,29 +107,31 @@ spec:
         stage('Update Flux GitOps') {
             steps {
                 container('jnlp') {
-                    sshagent(credentials: ["${GIT_SSH_CREDENTIALS}"]) {
-                        sh '''
-                            export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
+                    sh '''
+                        # Create SSH wrapper to use the private key
+                        echo "#!/bin/sh" > ${SSH_WRAPPER}
+                        echo "exec ssh -o StrictHostKeyChecking=no -i ${GIT_PRIVATE_KEY} \"$@\"" >> ${SSH_WRAPPER}
+                        chmod +x ${SSH_WRAPPER}
 
-                            rm -rf flux-repo
-                            git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
-                            cd flux-repo
+                        # Remove old repo and clone via SSH using wrapper
+                        rm -rf flux-repo
+                        GIT_SSH=${SSH_WRAPPER} git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
+                        cd flux-repo
 
-                            # Replace image tag in kustomization.yaml
-                            sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_FILE}
+                        # Update image tag in kustomization.yaml
+                        sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_FILE}
 
-                            git config user.email "jenkins@ci.local"
-                            git config user.name "Jenkins CI"
+                        git config user.email "jenkins@ci.local"
+                        git config user.name "Jenkins CI"
 
-                            if git diff --quiet; then
-                                echo "No Flux changes detected. Skipping commit."
-                            else
-                                git add ${FLUX_K8S_FILE}
-                                git commit -m "Update java-web-app image to ${IMAGE_TAG}"
-                                git push origin ${FLUX_GIT_BRANCH}
-                            fi
-                        '''
-                    }
+                        if git diff --quiet; then
+                            echo "No Flux changes detected. Skipping commit."
+                        else
+                            git add ${FLUX_K8S_FILE}
+                            git commit -m "Update java-web-app image to ${IMAGE_TAG}"
+                            GIT_SSH=${SSH_WRAPPER} git push origin ${FLUX_GIT_BRANCH}
+                        fi
+                    '''
                 }
             }
         }
