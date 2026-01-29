@@ -1,14 +1,14 @@
 pipeline {
     agent {
         kubernetes {
-            label 'maven-docker-kubectl-agent'
+            label 'maven-docker-agent'
             defaultContainer 'jnlp'
             yaml """
 apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    jenkins/label: maven-docker-kubectl-agent
+    jenkins/label: maven-docker-agent
 spec:
   containers:
   - name: maven
@@ -28,13 +28,6 @@ spec:
     volumeMounts:
     - name: docker-socket
       mountPath: /var/run/docker.sock
-  - name: kubectl
-    image: lachlanevenson/k8s-kubectl:v1.30.0
-    command:
-    - sh
-    - -c
-    - "sleep infinity"
-    tty: true
   - name: jnlp
     image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
     resources:
@@ -50,10 +43,10 @@ spec:
     }
 
     environment {
-        GIT_CREDENTIALS = 'FutureYY'  // Git credential ID
+        GIT_CREDENTIALS = 'FutureYY'
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
-        SONAR_LOGIN = credentials('jenkins-sonarqube')  // SonarQube token
-        HARBOR_CREDENTIALS = credentials('jenkins-harbor') // Harbor credentials
+        SONAR_LOGIN = credentials('jenkins-sonarqube')
+        HARBOR_CREDENTIALS = credentials('jenkins-harbor')
         IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:1.0.${BUILD_NUMBER}"
     }
 
@@ -85,11 +78,11 @@ spec:
             steps {
                 container('maven') {
                     dir('java-web-app') {
-                        sh """
+                        sh '''
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
                             -Dsonar.host.url=${SONAR_HOST_URL} \
                             -Dsonar.login=${SONAR_LOGIN}
-                        """
+                        '''
                     }
                 }
             }
@@ -101,7 +94,7 @@ spec:
                     dir('java-web-app') {
                         sh """
                             echo "Logging into Harbor..."
-                            docker login -u \$HARBOR_CREDENTIALS_USR -p \$HARBOR_CREDENTIALS_PSW harbor.lab.local
+                            docker login -u $HARBOR_CREDENTIALS_USR -p $HARBOR_CREDENTIALS_PSW harbor.lab.local
 
                             echo "Building Docker image..."
                             docker build --no-cache -t ${IMAGE_NAME} .
@@ -114,15 +107,14 @@ spec:
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Trigger Deployment') {
             steps {
-                container('kubectl') {
-                    sh """
-                        echo "Updating deployment to use new image..."
-                        kubectl set image deployment/java-web-app java-web-app=${IMAGE_NAME} -n java-web-app
-                        kubectl rollout status deployment/java-web-app -n java-web-app
-                    """
-                }
+                echo """
+                    Docker image ${IMAGE_NAME} is now pushed.
+                    Deployment should automatically pick up the new image if:
+                    - Deployment uses imagePullPolicy: Always, or
+                    - GitOps (Flux/ArgoCD) is monitoring the deployment.
+                """
             }
         }
     }
