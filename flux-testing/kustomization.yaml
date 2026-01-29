@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: java-web-app
-          image: harbor.lab.local/final/java-web-app-3:latest
+          image: harbor.lab.local/final/java-web-app-3:16
           ports:
             - containerPort: 8080
