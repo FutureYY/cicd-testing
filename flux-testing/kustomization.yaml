@@ -14,7 +14,12 @@ spec:
         app: java-web-app-4
     spec:
       containers:
+<<<<<<< HEAD
         - name: java-web-app-4
           image: harbor.lab.local/final/java-web-app-3:latest
+=======
+        - name: java-web-app
+          image: harbor.lab.local/final/java-web-app-3:16
+>>>>>>> 2044a09e08eaa43048e30653d905d4b96a2bdeab
           ports:
             - containerPort: 8080
