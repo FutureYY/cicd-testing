@@ -16,6 +16,7 @@ spec:
       containers:
       - name: java-web-app
         image: harbor.lab.local/final/java-web-app-3:1.0.0
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         readinessProbe:
