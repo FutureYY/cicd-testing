@@ -107,14 +107,34 @@ spec:
             }
         }
 
-        stage('Trigger Deployment') {
+        stage('Trigger Deployment Rollout') {
             steps {
-                echo """
-                    Docker image ${IMAGE_NAME} is now pushed.
-                    It should show Hello Flux from GitOps
-                """
+                container('docker') {
+                    dir('java-web-app') {
+                        sh '''
+                            echo "Downloading kubectl binary..."
+                            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                            chmod +x kubectl
+
+                            # Get the currently running image
+                            CURRENT_IMAGE=$(./kubectl get deployment java-web-app -n java-web-app -o jsonpath="{.spec.template.spec.containers[?(@.name=='java-web-app')].image}")
+
+                            echo "Current image: $CURRENT_IMAGE"
+                            echo "New image: ${IMAGE_NAME}"
+
+                            if [ "$CURRENT_IMAGE" != "${IMAGE_NAME}" ]; then
+                                echo "Image is different. Updating deployment..."
+                                ./kubectl set image deployment/java-web-app java-web-app=${IMAGE_NAME} -n java-web-app
+                                ./kubectl rollout status deployment/java-web-app -n java-web-app
+                            else
+                                echo "Deployment already uses the latest image. No rollout needed."
+                            fi
+                        '''
+                    }
+                }
             }
         }
+
     }
 
     post {

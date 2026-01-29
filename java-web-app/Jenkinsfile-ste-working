@@ -107,17 +107,6 @@ spec:
             }      
 
         }
-       
-         stage('Deploy to Kubernetes') {
-           steps {
-             container('docker') {
-               sh """
-                 kubectl set image deployment/java-web-app java-web-app=${IMAGE_NAME} -n java-web-app
-                 kubectl rollout status deployment/java-web-app -n java-web-app
-              """
-            }
-        }
-    }
 
   }
 
