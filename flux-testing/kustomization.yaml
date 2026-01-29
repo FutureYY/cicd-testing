@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: java-web-app
-  namespace: default
+  name: java-web-app-4
+  namespace: default-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: java-web-app
+      app: java-web-app-4
   template:
     metadata:
       labels:
-        app: java-web-app
+        app: java-web-app-4
     spec:
       containers:
-        - name: java-web-app
+        - name: java-web-app-4
           image: harbor.lab.local/final/java-web-app-3:latest
           ports:
             - containerPort: 8080
