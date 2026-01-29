@@ -1,151 +1,139 @@
 pipeline {
-  agent {
-    kubernetes {
-      label 'maven'
-      defaultContainer 'maven'
-      yaml """
+    agent {
+        kubernetes {
+            label 'maven-docker-kubectl-agent'
+            defaultContainer 'jnlp'
+            yaml """
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    jenkins/label: maven-docker-kubectl-agent
 spec:
   containers:
   - name: maven
-    image: maven:3.9.9-eclipse-temurin-17
+    image: maven:3.9.6-eclipse-temurin-17
     command: ['cat']
     tty: true
-    workingDir: /home/jenkins/agent
-    volumeMounts:
-    - name: workspace-volume
-      mountPath: /home/jenkins/agent
-
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
   - name: docker
-    image: docker:26
+    image: docker:24.0.6-cli
     command: ['cat']
     tty: true
-    env:
-    - name: DOCKER_HOST
-      value: tcp://localhost:2375
-    - name: DOCKER_TLS_CERTDIR
-      value: ""
-    workingDir: /home/jenkins/agent
     volumeMounts:
-    - name: workspace-volume
-      mountPath: /home/jenkins/agent
-
-  - name: dind
-    image: docker:26-dind
-    securityContext:
-      privileged: true
-    env:
-    - name: DOCKER_TLS_CERTDIR
-      value: ""
-    volumeMounts:
-    - name: docker-graph
-      mountPath: /var/lib/docker
-    - name: workspace-volume
-      mountPath: /home/jenkins/agent
-
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
+  - name: kubectl
+    image: bitnami/kubectl:1.30
+    command: ['cat']
+    tty: true
+  - name: jnlp
+    image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
   volumes:
-  - name: workspace-volume
-    emptyDir: {}
-  - name: docker-graph
-    emptyDir: {}
+  - name: docker-socket
+    hostPath:
+      path: /var/run/docker.sock
 """
-    }
-  }
-
-  environment {
-    REGISTRY   = "harbor.lab.local"
-    PROJECT    = "java-web-app"
-    APP_NAME   = "java-web-app"
-    IMAGE_TAG  = "${BUILD_NUMBER}"
-    NAMESPACE  = "java-web-app"
-  }
-
-  stages {
-
-    stage('Agent Test') {
-      steps {
-        container('docker') {
-          sh '''
-            docker version
-            docker info
-          '''
         }
-      }
     }
 
-    stage('Build') {
-      steps {
-        container('maven') {
-          dir('java-web-app') {
-            sh 'mvn clean verify'
-          }
-        }
-      }
+    environment {
+        GIT_CREDENTIALS = 'FutureYY'  // Jenkins Git credential ID
+        SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
+        SONAR_LOGIN = credentials('jenkins-sonarqube')
+        HARBOR_CREDENTIALS = credentials('jenkins-harbor')
+        IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:1.0.${BUILD_NUMBER}"
+        DEPLOYMENT_NAME = "java-web-app"
+        NAMESPACE = "java-web-app"
     }
 
-    stage('Sonar Scan') {
-      steps {
-        container('maven') {
-          dir('java-web-app') {
-            withSonarQubeEnv('jenkins-sonarqube') {
-              sh '''
-                mvn sonar:sonar \
-                  -Dsonar.projectKey=demo
-              '''
+    stages {
+
+        stage('Checkout SCM') {
+            steps {
+                deleteDir()
+                checkout([$class: 'GitSCM',
+                          branches: [[name: 'main']],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [],
+                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
+                                               credentialsId: "${GIT_CREDENTIALS}"]]])
             }
-          }
         }
-      }
+
+        stage('Build with Maven') {
+            steps {
+                container('maven') {
+                    dir('java-web-app') {
+                        sh 'mvn clean package -DskipTests'
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                container('maven') {
+                    dir('java-web-app') {
+                        sh """
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.login=${SONAR_LOGIN}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Build & Push Docker Image') {
+            steps {
+                container('docker') {
+                    dir('java-web-app') {
+                        sh """
+                            echo "Logging into Harbor..."
+                            docker login -u $HARBOR_CREDENTIALS_USR -p $HARBOR_CREDENTIALS_PSW harbor.lab.local
+
+                            echo "Building Docker image..."
+                            docker build --no-cache -t ${IMAGE_NAME} .
+
+                            echo "Pushing Docker image to Harbor..."
+                            docker push ${IMAGE_NAME}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                container('kubectl') {
+                    sh """
+                        echo "Updating deployment image..."
+                        kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${IMAGE_NAME} -n ${NAMESPACE}
+                        echo "Waiting for rollout to complete..."
+                        kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${NAMESPACE}
+                    """
+                }
+            }
+        }
     }
 
-    stage('Build Docker Image') {
-      steps {
-        container('docker') {
-          dir('java-web-app') {
-            sh '''
-              docker build -t ${REGISTRY}/${PROJECT}/${APP_NAME}:${IMAGE_TAG} .
-            '''
-          }
+    post {
+        always {
+            echo 'Pipeline finished.'
         }
-      }
-    }
-
-    stage('Push Image to Harbor') {
-      steps {
-        container('docker') {
-          withCredentials([usernamePassword(
-            credentialsId: 'harbor-credentials',
-            usernameVariable: 'H_USER',
-            passwordVariable: 'H_PASS'
-          )]) {
-            sh '''
-              echo "$H_PASS" | docker login ${REGISTRY} -u "$H_USER" --password-stdin
-              docker push ${REGISTRY}/${PROJECT}/${APP_NAME}:${IMAGE_TAG}
-            '''
-          }
+        success {
+            echo 'Pipeline succeeded!'
         }
-      }
-    }
-
-    stage('Deploy to Kubernetes') {
-      steps {
-        container('maven') {
-          sh '''
-            kubectl apply -f java-web-app/k8s/deployment.yaml -n ${NAMESPACE}
-            kubectl apply -f java-web-app/k8s/service.yaml -n ${NAMESPACE}
-          '''
+        failure {
+            echo 'Pipeline failed!'
         }
-      }
     }
-  }
-
-  post {
-    success {
-      echo "Deployment complete"
-    }
-    failure {
-      echo "Build or deployment failed"
-    }
-  }
 }
