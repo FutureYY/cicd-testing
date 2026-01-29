@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-web-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-web-app
+  template:
+    metadata:
+      labels:
+        app: java-web-app
+    spec:
+      containers:
+        - name: java-web-app
+          image: harbor.lab.local/final/java-web-app-3:latest  # Jenkins will replace this tag
+          ports:
+            - containerPort: 8080
