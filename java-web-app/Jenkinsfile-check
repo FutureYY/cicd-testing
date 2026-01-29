@@ -111,9 +111,7 @@ spec:
             steps {
                 echo """
                     Docker image ${IMAGE_NAME} is now pushed.
-                    Deployment should automatically pick up the new image if:
-                    - Deployment uses imagePullPolicy: Always, or
-                    - GitOps (Flux/ArgoCD) is monitoring the deployment.
+                    It should show Hello Flux from GitOps
                 """
             }
         }
