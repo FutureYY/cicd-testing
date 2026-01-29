@@ -10,9 +10,13 @@ RUN ./mvnw install -DskipTests
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM eclipse-temurin:17-jre-alpine
-VOLUME /tmp
-ARG DEPENDENCY=/workspace/app/target/dependency
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-Dserver.port=${PORT}","-cp","app:app/lib/*","com.example.demo.DemoApplication"]
+WORKDIR /app
+COPY --from=build /app/target/*SNAPSHOT.jar app.jar
+
+ENTRYPOINT ["java","-jar","/app/app.jar"]
+#VOLUME /tmp
+#ARG DEPENDENCY=/workspace/app/target/dependency
+#COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
+#COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
+#COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+#ENTRYPOINT ["java","-Dserver.port=${PORT}","-cp","app:app/lib/*","com.example.demo.DemoApplication"]
