@@ -39,14 +39,13 @@ spec:
     }
 
     environment {
-        GIT_HTTPS_CREDENTIALS = 'github-https'      // For main repo checkout
-        GIT_PRIVATE_KEY = credentials('github-ssh') // SSH private key for Flux push
+        GIT_CREDENTIALS = 'github-https' // Jenkins credential ID for GitHub PAT
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
         SONAR_LOGIN = credentials('jenkins-sonarqube')
         HARBOR_CREDENTIALS = credentials('jenkins-harbor')
-        IMAGE_TAG = "${BUILD_NUMBER}"               // unique tag per build
+        IMAGE_TAG = "${BUILD_NUMBER}"
         IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}"
-        FLUX_GIT_REPO = 'git@github.com:FutureYY/cicd-testing.git' // SSH for Flux
+        FLUX_GIT_REPO = 'https://github.com/FutureYY/cicd-testing.git'
         FLUX_GIT_BRANCH = 'main'
         FLUX_K8S_FILE = 'flux-testing/kustomization.yaml'
     }
@@ -59,9 +58,10 @@ spec:
                           doGenerateSubmoduleConfigurations: false,
                           extensions: [],
                           userRemoteConfigs: [[
-                              url: 'https://github.com/FutureYY/cicd-testing.git',
-                              credentialsId: "${GIT_HTTPS_CREDENTIALS}"
-                          ]]])
+                              url: "${FLUX_GIT_REPO}",
+                              credentialsId: "${GIT_CREDENTIALS}"
+                          ]]
+                ])
             }
         }
 
@@ -81,8 +81,8 @@ spec:
                     dir('java-web-app-4') {
                         sh """
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
-                                -Dsonar.host.url=${SONAR_HOST_URL} \
-                                -Dsonar.login=${SONAR_LOGIN}
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_LOGIN}
                         """
                     }
                 }
@@ -106,34 +106,27 @@ spec:
         stage('Update Flux GitOps') {
             steps {
                 container('jnlp') {
-                    sh '''
-                        # Write SSH private key to file
-                        mkdir -p ~/.ssh
-                        echo "${GIT_PRIVATE_KEY}" > ~/.ssh/id_rsa
-                        chmod 600 ~/.ssh/id_rsa
+                    withCredentials([usernamePassword(credentialsId: "${GIT_CREDENTIALS}", usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                        sh """
+                            rm -rf flux-repo
+                            git clone -b ${FLUX_GIT_BRANCH} https://${GIT_USER}:${GIT_TOKEN}@github.com/FutureYY/cicd-testing.git flux-repo
+                            cd flux-repo
 
-                        # Use SSH key for git commands
-                        export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no"
+                            # Update image tag in kustomization.yaml
+                            sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_FILE}
 
-                        # Remove old repo and clone via SSH
-                        rm -rf flux-repo
-                        git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
-                        cd flux-repo
+                            git config user.email "jenkins@ci.local"
+                            git config user.name "Jenkins CI"
 
-                        # Update image tag in kustomization.yaml
-                        sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_FILE}
-
-                        git config user.email "jenkins@ci.local"
-                        git config user.name "Jenkins CI"
-
-                        if git diff --quiet; then
-                            echo "No Flux changes detected. Skipping commit."
-                        else
-                            git add ${FLUX_K8S_FILE}
-                            git commit -m "Update java-web-app image to ${IMAGE_TAG}"
-                            git push origin ${FLUX_GIT_BRANCH}
-                        fi
-                    '''
+                            if git diff --quiet; then
+                                echo "No Flux changes detected. Skipping commit."
+                            else
+                                git add ${FLUX_K8S_FILE}
+                                git commit -m "Update java-web-app image to ${IMAGE_TAG}"
+                                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/FutureYY/cicd-testing.git ${FLUX_GIT_BRANCH}
+                            fi
+                        """
+                    }
                 }
             }
         }
