@@ -39,13 +39,13 @@ spec:
     }
 
     environment {
-        GIT_CREDENTIALS = 'FutureYY'               
+        GIT_CREDENTIALS = 'FutureYY'                     // Jenkins SSH credentials ID for Git
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
         SONAR_LOGIN = credentials('jenkins-sonarqube')
         HARBOR_CREDENTIALS = credentials('jenkins-harbor')
-        IMAGE_TAG = "${BUILD_NUMBER}"  // unique tag per build
+        IMAGE_TAG = "${BUILD_NUMBER}"                    // unique tag per build
         IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}"
-        FLUX_GIT_REPO = 'https://github.com/FutureYY/cicd-testing.git'
+        FLUX_GIT_REPO = 'git@github.com:FutureYY/cicd-testing.git' // use SSH
         FLUX_GIT_BRANCH = 'main'
         FLUX_K8S_FILE = 'flux-testing/kustomization.yaml'
     }
@@ -57,7 +57,7 @@ spec:
                           branches: [[name: 'main']],
                           doGenerateSubmoduleConfigurations: false,
                           extensions: [],
-                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
+                          userRemoteConfigs: [[url: "${FLUX_GIT_REPO}",
                                                credentialsId: "${GIT_CREDENTIALS}"]]])
             }
         }
@@ -78,8 +78,8 @@ spec:
                     dir('java-web-app-4') {
                         sh """
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.login=${SONAR_LOGIN}
+                                -Dsonar.host.url=${SONAR_HOST_URL} \
+                                -Dsonar.login=${SONAR_LOGIN}
                         """
                     }
                 }
@@ -103,25 +103,27 @@ spec:
         stage('Update Flux GitOps') {
             steps {
                 container('jnlp') {
-                    sh """
-                        rm -rf flux-repo
-                        git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
-                        cd flux-repo
+                    sshagent(credentials: ["${GIT_CREDENTIALS}"]) {  // inject SSH key
+                        sh """
+                            rm -rf flux-repo
+                            git clone -b ${FLUX_GIT_BRANCH} ${FLUX_GIT_REPO} flux-repo
+                            cd flux-repo
 
-                        # Replace image tag in kustomization.yaml
-                        sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_FILE}
+                            # Update image tag in kustomization.yaml
+                            sed -i 's|image: harbor.lab.local/final/java-web-app-3:.*|image: harbor.lab.local/final/java-web-app-3:${IMAGE_TAG}|' ${FLUX_K8S_FILE}
 
-                        git config user.email "jenkins@ci.local"
-                        git config user.name "Jenkins CI"
+                            git config user.email "jenkins@ci.local"
+                            git config user.name "Jenkins CI"
 
-                        if git diff --quiet; then
-                            echo "No Flux changes detected. Skipping commit."
-                        else
-                            git add ${FLUX_K8S_FILE}
-                            git commit -m "Update java-web-app image to ${IMAGE_TAG}"
-                            git push
-                        fi
-                    """
+                            if git diff --quiet; then
+                                echo "No Flux changes detected. Skipping commit."
+                            else
+                                git add ${FLUX_K8S_FILE}
+                                git commit -m "Update java-web-app image to ${IMAGE_TAG}"
+                                git push origin ${FLUX_GIT_BRANCH}
+                            fi
+                        """
+                    }
                 }
             }
         }
