@@ -1,0 +1,92 @@
+pipeline {
+    agent {
+        kubernetes {
+            label 'maven-agent'
+            defaultContainer 'jnlp'
+            yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins/label: maven-agent
+spec:
+  containers:
+  - name: maven
+    image: maven:3.9.6-eclipse-temurin-17
+    command:
+    - cat
+    tty: true
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+  - name: jnlp
+    image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+"""
+        }
+    }
+
+    environment {
+        GIT_CREDENTIALS = 'FutureYY'           // GitHub credentials ID in Jenkins
+        SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
+        SONAR_LOGIN = credentials('jenkins-sonarqube')  // SonarQube token ID in Jenkins
+    }
+
+    stages {
+
+        stage('Checkout SCM') {
+            steps {
+                checkout([$class: 'GitSCM',
+                          branches: [[name: 'main']],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [],
+                          userRemoteConfigs: [[url: 'https://github.com/FutureYY/cicd-testing.git',
+                                               credentialsId: "${GIT_CREDENTIALS}"]]])
+            }
+        }
+
+     
+        stage('Sonar Scan') {
+            steps {
+                container('maven') {
+                    dir('java-web-app-2') {
+                        sh '''
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_LOGIN}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                container('maven') {
+                    dir('java-web-app-2') {
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+        }
+
+     
+
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'   // safely quoted with double quotes
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
