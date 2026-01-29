@@ -13,7 +13,8 @@ spec:
   containers:
   - name: maven
     image: maven:3.9.6-eclipse-temurin-17
-    command: ['cat']
+    command:
+    - cat
     tty: true
     resources:
       requests:
@@ -21,14 +22,18 @@ spec:
         memory: "128Mi"
   - name: docker
     image: docker:24.0.6-cli
-    command: ['cat']
+    command:
+    - cat
     tty: true
     volumeMounts:
-      - name: docker-socket
-        mountPath: /var/run/docker.sock
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
   - name: kubectl
-    image: k8s.gcr.io/kubectl:v1.30.0
-    command: ['cat']
+    image: lachlanevenson/k8s-kubectl:v1.30.0
+    command:
+    - sh
+    - -c
+    - "sleep infinity"
     tty: true
   - name: jnlp
     image: jenkins/inbound-agent:3345.v03dee9b_f88fc-1
@@ -37,21 +42,19 @@ spec:
         cpu: "100m"
         memory: "256Mi"
   volumes:
-    - name: docker-socket
-      hostPath:
-        path: /var/run/docker.sock
+  - name: docker-socket
+    hostPath:
+      path: /var/run/docker.sock
 """
         }
     }
 
     environment {
-        GIT_CREDENTIALS = 'FutureYY'
+        GIT_CREDENTIALS = 'FutureYY'  // Git credential ID
         SONAR_HOST_URL = 'http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
-        SONAR_LOGIN = credentials('jenkins-sonarqube')
-        HARBOR_CREDENTIALS = credentials('jenkins-harbor')
+        SONAR_LOGIN = credentials('jenkins-sonarqube')  // SonarQube token
+        HARBOR_CREDENTIALS = credentials('jenkins-harbor') // Harbor credentials
         IMAGE_NAME = "harbor.lab.local/final/java-web-app-3:1.0.${BUILD_NUMBER}"
-        DEPLOYMENT_NAME = "java-web-app"
-        NAMESPACE = "java-web-app"
     }
 
     stages {
@@ -82,11 +85,11 @@ spec:
             steps {
                 container('maven') {
                     dir('java-web-app') {
-                        sh '''
+                        sh """
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
-                                -Dsonar.host.url=${SONAR_HOST_URL} \
-                                -Dsonar.login=${SONAR_LOGIN}
-                        '''
+                            -Dsonar.host.url=${SONAR_HOST_URL} \
+                            -Dsonar.login=${SONAR_LOGIN}
+                        """
                     }
                 }
             }
@@ -98,12 +101,12 @@ spec:
                     dir('java-web-app') {
                         sh """
                             echo "Logging into Harbor..."
-                            docker login -u $HARBOR_CREDENTIALS_USR -p $HARBOR_CREDENTIALS_PSW harbor.lab.local
+                            docker login -u \$HARBOR_CREDENTIALS_USR -p \$HARBOR_CREDENTIALS_PSW harbor.lab.local
 
                             echo "Building Docker image..."
                             docker build --no-cache -t ${IMAGE_NAME} .
 
-                            echo "Pushing Docker image..."
+                            echo "Pushing Docker image to Harbor..."
                             docker push ${IMAGE_NAME}
                         """
                     }
@@ -115,17 +118,13 @@ spec:
             steps {
                 container('kubectl') {
                     sh """
-                        echo "Updating deployment image..."
-                        kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${IMAGE_NAME} -n ${NAMESPACE}
-                        echo "Waiting for rollout to complete..."
-                        kubectl rollout status deployment/${DEPLOYMENT_NAME} -n ${NAMESPACE}
-                        echo "Current pod status:"
-                        kubectl get pods -n ${NAMESPACE}
+                        echo "Updating deployment to use new image..."
+                        kubectl set image deployment/java-web-app java-web-app=${IMAGE_NAME} -n java-web-app
+                        kubectl rollout status deployment/java-web-app -n java-web-app
                     """
                 }
             }
         }
-
     }
 
     post {
