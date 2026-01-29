@@ -1,4 +1,4 @@
-Wpipeline {
+pipeline {
     agent {
         kubernetes {
             label 'maven-docker-agent'
