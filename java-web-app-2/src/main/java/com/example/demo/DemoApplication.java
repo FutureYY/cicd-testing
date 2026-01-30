@@ -9,13 +9,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DemoApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
 
-	@RequestMapping("/")
-  public String home() {
-    return "Hello Docker World!";
-    return "Hello Docker World!";
-  }
+    @RequestMapping("/")
+    public String home() {
+        return "Hello Docker World!";
+    }
+
+
+    @RequestMapping("/two")
+    public String home2() {
+        return "Hello Docker World!";
+    }
+
 }
